@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
+import AsyncSelect from "react-select/async";
 import Select from "react-select";
+import locations from "../data/locations.json";
 
 // import "./App.css";
-const locations = [
-  { value: "sanfran", label: "San Francisco" },
+const cities = [
+  { value: "san_francisco", label: "San Francisco" },
   { value: "vancouver", label: "Vancouver" },
   { value: "waterloo", label: "Waterloo" },
 ];
@@ -22,14 +24,14 @@ const extendTheme = (theme) => {
     borderRadius: 0,
     colors: {
       ...theme.colors,
-      primary: "black",
+      primary: "#333",
     },
   };
 };
 
 function Settings() {
-  const [location, setLocation] = useState({
-    value: "sanfran",
+  const [city, setCity] = useState({
+    value: "san_francisco",
     label: "San Francisco",
   });
 
@@ -38,22 +40,48 @@ function Settings() {
     label: "Dijkstra's Algorithm",
   });
 
-  const handleLocationChange = (newLoc) => {
-    setLocation(newLoc);
+  const [startNode, setStartNode] = useState({
+    value: "",
+    lable: "Loading...",
+  });
+
+  const [endNode, setEndNode] = useState({
+    value: "",
+    lable: "Loading...",
+  });
+
+  const loadNodes = (inputVal, callback) => {
+    if (locations[city.value]) {
+      setStartNode(locations[city.value][0]);
+      setEndNode(locations[city.value][1]);
+      callback(locations[city.value]);
+    }
+  };
+
+  const handleCityChange = (newCity) => {
+    setCity(newCity);
   };
 
   const handleAlgorithmChange = (newAlgo) => {
     setAlgorithm(newAlgo);
   };
 
+  const handleStartNodeChange = (newStartNode) => {
+    setStartNode(newStartNode);
+  };
+
+  const handleEndNodeChange = (newEndNode) => {
+    setEndNode(newEndNode);
+  };
+
   return (
     <div className="settings" style={styles.settings}>
       <div style={styles.setting}>
-        <p style={styles.label}>location</p>
+        <p style={styles.label}>city</p>
         <Select
-          value={location}
-          onChange={handleLocationChange}
-          options={locations}
+          value={city}
+          onChange={handleCityChange}
+          options={cities}
           theme={extendTheme}
         />
       </div>
@@ -70,20 +98,24 @@ function Settings() {
 
       <div style={styles.setting}>
         <p style={styles.label}>start</p>
-        <Select
-          value={algorithm}
-          onChange={handleAlgorithmChange}
-          options={algos}
+        <AsyncSelect
+          value={startNode}
+          onChange={handleStartNodeChange}
+          cacheOptions
+          loadOptions={loadNodes}
+          defaultOptions
           theme={extendTheme}
         />
       </div>
 
       <div style={styles.setting}>
         <p style={styles.label}>end</p>
-        <Select
-          value={algorithm}
-          onChange={handleAlgorithmChange}
-          options={algos}
+        <AsyncSelect
+          value={endNode}
+          onChange={handleEndNodeChange}
+          cacheOptions
+          loadOptions={loadNodes}
+          defaultOptions
           theme={extendTheme}
         />
       </div>
@@ -110,7 +142,7 @@ const styles = {
   button: {
     width: "100%",
     cursor: "pointer",
-    backgroundColor: "black",
+    backgroundColor: "#333",
     padding: "0.85rem 1.85rem",
     color: "white",
     border: 0,

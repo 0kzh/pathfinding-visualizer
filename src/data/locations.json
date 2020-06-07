@@ -1,19 +1,19 @@
 {
   "san_francisco": [
-    { "name": "Golden Gate Bridge", "node": "5658080382" },
-    { "name": "Fisherman's Wharf", "node": "434685829" },
-    { "name": "Pier 39", "node": "4406692074" },
-    { "name": "Presidio", "node": "2985234922" },
-    { "name": "Golden Gate Park", "node": "4036026331" },
-    { "name": "Land's End", "node": "258683426" },
-    { "name": "Oracle Park", "node": "264172068" },
-    { "name": "Union Square", "node": "364825950" },
-    { "name": "Twin Peaks", "node": "5554105375" },
-    { "name": "Japanese Tea Garden", "node": "271820607" },
-    { "name": "San Francisco City Hall", "node": "1420265503" },
-    { "name": "Lombard Street", "node": "2089587808" },
-    { "name": "Chinatown", "node": "7233764940" },
-    { "name": "Museum of Ice Cream", "node": "65371286" },
-    { "name": "Civic Centre", "node": "267294274" }
+    { "label": "Golden Gate Bridge", "value": "5658080382" },
+    { "label": "Fisherman's Wharf", "value": "434685829" },
+    { "label": "Pier 39", "value": "4406692074" },
+    { "label": "Presidio", "value": "2985234922" },
+    { "label": "Golden Gate Park", "value": "4036026331" },
+    { "label": "Land's End", "value": "258683426" },
+    { "label": "Oracle Park", "value": "264172068" },
+    { "label": "Union Square", "value": "364825950" },
+    { "label": "Twin Peaks", "value": "5554105375" },
+    { "label": "Japanese Tea Garden", "value": "271820607" },
+    { "label": "San Francisco City Hall", "value": "1420265503" },
+    { "label": "Lombard Street", "value": "2089587808" },
+    { "label": "Chinatown", "value": "7233764940" },
+    { "label": "Museum of Ice Cream", "value": "65371286" },
+    { "label": "Civic Centre", "value": "267294274" }
   ]
 }

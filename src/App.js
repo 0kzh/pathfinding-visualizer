@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { Icon } from "leaflet";
 import { Map, Marker, Popup, TileLayer, ZoomControl } from "react-leaflet";
 import nodeData from "./data/sanfran.json";
-import locations from "./data/locations.json";
+import cities from "./data/locations.json";
 import { accessToken } from "./creds";
 import Settings from "./components/Settings";
 import "./App.css";
@@ -55,15 +55,15 @@ function App() {
             return null;
           }
         })} */}
-        {locations["san_francisco"].map((loc) => {
-          const val = nodeData[loc.node];
-          console.log(val);
+        {cities["san_francisco"].map((loc) => {
+          const val = nodeData[loc.value];
+          // console.log(val);
           return (
             <Marker
               key={loc.node}
               position={[val.lat, val.lon]}
               onClick={() => {
-                console.log(loc.node);
+                console.log(loc.value);
               }}
               icon={icon}
             />
