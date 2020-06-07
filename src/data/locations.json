@@ -1,0 +1,19 @@
+{
+  "san_francisco": [
+    { "name": "Golden Gate Bridge", "node": "5658080382" },
+    { "name": "Fisherman's Wharf", "node": "434685829" },
+    { "name": "Pier 39", "node": "4406692074" },
+    { "name": "Presidio", "node": "2985234922" },
+    { "name": "Golden Gate Park", "node": "4036026331" },
+    { "name": "Land's End", "node": "258683426" },
+    { "name": "Oracle Park", "node": "264172068" },
+    { "name": "Union Square", "node": "364825950" },
+    { "name": "Twin Peaks", "node": "5554105375" },
+    { "name": "Japanese Tea Garden", "node": "271820607" },
+    { "name": "San Francisco City Hall", "node": "1420265503" },
+    { "name": "Lombard Street", "node": "2089587808" },
+    { "name": "Chinatown", "node": "7233764940" },
+    { "name": "Museum of Ice Cream", "node": "65371286" },
+    { "name": "Civic Centre", "node": "267294274" }
+  ]
+}
