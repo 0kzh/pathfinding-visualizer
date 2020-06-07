@@ -4,11 +4,12 @@ import { Icon } from "leaflet";
 import { Map, Marker, Popup, TileLayer, ZoomControl } from "react-leaflet";
 import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
-import { accessToken } from "./creds";
 import Settings from "./components/Settings";
+import { nodeInfo, pair } from "./types";
+import { hasKey } from "./utils";
 import "./App.css";
 
-function App() {
+const App: React.FC<{}> = () => {
   const [lng, setLng] = useState(-122.4372);
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
@@ -55,22 +56,24 @@ function App() {
             return null;
           }
         })} */}
-        {cities["san_francisco"].map((loc) => {
-          const val = nodeData[loc.value];
-          // console.log(val);
-          return (
-            <Marker
-              key={loc.node}
-              position={[val.lat, val.lon]}
-              onClick={() => {
-                console.log(loc.value);
-              }}
-              icon={icon}
-            />
-          );
+        {cities["san_francisco"].map((loc: pair) => {
+          if (hasKey(nodeData, loc.value)) {
+            const val: nodeInfo = nodeData[loc.value];
+            // console.log(val);
+            return (
+              <Marker
+                key={loc.value}
+                position={[val.lat, val.lon]}
+                onClick={() => {
+                  console.log(loc.value);
+                }}
+                icon={icon}
+              />
+            );
+          }
         })}
       </Map>
     </div>
   );
-}
+};
 export default App;
