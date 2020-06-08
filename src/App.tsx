@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
 import { Icon } from "leaflet";
 import { Map, Marker, Popup, TileLayer, ZoomControl } from "react-leaflet";
+import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
 import Settings from "./components/Settings";
@@ -14,15 +15,37 @@ const App: React.FC<{}> = () => {
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
 
+  const [startNode, setStartNode] = useState<ValueType<pair> | null>(null);
+  const [endNode, setEndNode] = useState<ValueType<pair> | null>(null);
+
   const icon = new Icon({
     iconUrl: "/marker.svg",
-    iconSize: [25, 25],
+    iconSize: [20, 20],
   });
+
+  const activeIcon = new Icon({
+    iconUrl: "/pin.svg",
+    iconSize: [24, 24],
+  });
+
+  const getMarker = (key: string) => {
+    const start = startNode as pair;
+    const end = endNode as pair;
+    if (start && end && (start.value == key || end.value == key)) {
+      return activeIcon;
+    }
+    return icon;
+  };
 
   // console.log(nodeData["6597683646"]);
   return (
     <div className="App">
-      <Settings />
+      <Settings
+        startNode={startNode}
+        endNode={endNode}
+        setStartNodeHandler={setStartNode}
+        setEndNodeHandler={setEndNode}
+      />
       <Map center={[lat, lng]} zoom={zoom} zoomControl={false}>
         <TileLayer
           url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
@@ -30,36 +53,9 @@ const App: React.FC<{}> = () => {
         />
 
         <ZoomControl position={"bottomleft"} />
-
-        {/* <Marker
-          position={[, val.lat]}
-          onClick={() => {
-            // setActivePark(park);
-          }}
-          icon={icon}
-        /> */}
-        {/* {Object.keys(nodeData).map((key, index) => {
-          const val = nodeData[key];
-
-          if (index % 50 == 0 && val) {
-            return (
-              <Marker
-                key={key}
-                position={[val.lat, val.lon]}
-                onClick={() => {
-                  console.log(key);
-                }}
-                icon={icon}
-              />
-            );
-          } else {
-            return null;
-          }
-        })} */}
         {cities["san_francisco"].map((loc: pair) => {
           if (hasKey(nodeData, loc.value)) {
             const val: nodeInfo = nodeData[loc.value];
-            // console.log(val);
             return (
               <Marker
                 key={loc.value}
@@ -67,7 +63,7 @@ const App: React.FC<{}> = () => {
                 onClick={() => {
                   console.log(loc.value);
                 }}
-                icon={icon}
+                icon={getMarker(loc.value)}
               />
             );
           }

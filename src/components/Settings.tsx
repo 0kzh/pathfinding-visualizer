@@ -1,9 +1,10 @@
 import React, { CSSProperties, useEffect, useState, useRef } from "react";
 import AsyncSelect from "react-select/async";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import locations from "../data/locations.json";
 import CSS from "csstype";
 import { nodeInfo, pair } from "../types";
+import { SelectComponents } from "react-select/src/components";
 import { ValueType } from "react-select/src/types";
 import { hasKey } from "../utils";
 import styled from "styled-components";
@@ -22,6 +23,13 @@ const algos: Array<pair> = [
   { value: "bfs", label: "Breadth First Search" },
   { value: "dfs", label: "Depth First Search" },
 ];
+
+interface Props {
+  startNode: ValueType<pair>;
+  endNode: ValueType<pair>;
+  setStartNodeHandler: (node: ValueType<pair>) => void;
+  setEndNodeHandler: (node: ValueType<pair>) => void;
+}
 
 const SettingsContainer = styled("div")`
   position: absolute;
@@ -68,7 +76,12 @@ const extendTheme = (theme: any) => {
   };
 };
 
-const Settings: React.FC<{}> = () => {
+const Settings: React.FC<Props> = ({
+  startNode,
+  endNode,
+  setStartNodeHandler,
+  setEndNodeHandler,
+}) => {
   const [city, setCity] = useState<ValueType<pair>>({
     value: "san_francisco",
     label: "San Francisco",
@@ -79,23 +92,29 @@ const Settings: React.FC<{}> = () => {
     label: "Dijkstra's Algorithm",
   });
 
-  const [startNode, setStartNode] = useState<ValueType<pair>>({
-    value: "",
-    label: "Loading...",
-  });
-
-  const [endNode, setEndNode] = useState<ValueType<pair>>({
-    value: "",
-    label: "Loading...",
-  });
-
   const loadNodes = (inputVal: any, callback: (res: Array<pair>) => void) => {
     const p = city as pair;
     if (hasKey(locations, p.value)) {
-      setStartNode(locations[p.value][0]);
-      setEndNode(locations[p.value][1]);
+      setStartNodeHandler(locations[p.value][0]);
+      setEndNodeHandler(locations[p.value][1]);
       callback(locations[p.value]);
     }
+  };
+
+  const Option = (props: any) => {
+    return (
+      <div
+        onMouseEnter={() => {
+          if (props.selectProps.isStart) {
+            setStartNodeHandler(props.data);
+          } else {
+            setEndNodeHandler(props.data);
+          }
+        }}
+      >
+        <components.Option {...props} />
+      </div>
+    );
   };
 
   return (
@@ -124,7 +143,9 @@ const Settings: React.FC<{}> = () => {
         <Label>start</Label>
         <AsyncSelect
           value={startNode}
-          onChange={setStartNode}
+          isStart
+          components={{ Option }}
+          onChange={setStartNodeHandler}
           cacheOptions
           loadOptions={loadNodes}
           defaultOptions
@@ -136,7 +157,8 @@ const Settings: React.FC<{}> = () => {
         <Label>end</Label>
         <AsyncSelect
           value={endNode}
-          onChange={setEndNode}
+          components={{ Option }}
+          onChange={setEndNodeHandler}
           cacheOptions
           loadOptions={loadNodes}
           defaultOptions
