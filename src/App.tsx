@@ -48,7 +48,7 @@ const App: React.FC<{}> = () => {
       />
       <Map center={[lat, lng]} zoom={zoom} zoomControl={false}>
         <TileLayer
-          url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
 
