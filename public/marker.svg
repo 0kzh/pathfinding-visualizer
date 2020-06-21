@@ -1,1 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#E16110" stroke="white" stroke-width="1" viewBox="0 0 24 24"><path d="M12 0c-4.198 0-8 3.403-8 7.602 0 6.243 6.377 6.903 8 16.398 1.623-9.495 8-10.155 8-16.398 0-4.199-3.801-7.602-8-7.602zm0 11c-1.657 0-3-1.343-3-3s1.342-3 3-3 3 1.343 3 3-1.343 3-3 3z"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" 
+  xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" viewBox="263.4023323615161 239.11661807580174 119.14285714285722 119.14285714285711" width="97.14" height="97.14">
+  <defs>
+    <path d="M371.55 298.69C371.55 325.5 349.78 347.26 322.97 347.26C296.17 347.26 274.4 325.5 274.4 298.69C274.4 271.88 296.17 250.12 322.97 250.12C349.78 250.12 371.55 271.88 371.55 298.69Z" id="e1Jmp1wHnn"></path>
+    <path d="M357.17 298.69C357.17 317.56 341.85 332.89 322.97 332.89C304.1 332.89 288.78 317.56 288.78 298.69C288.78 279.81 304.1 264.49 322.97 264.49C341.85 264.49 357.17 279.81 357.17 298.69Z" id="b2TUb52CVS"></path>
+  </defs>
+  <g>
+    <g>
+      <g>
+        <filter id="shadow7795251" x="249.4" y="225.12" width="147.14" height="147.14" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse">
+          <feFlood></feFlood>
+          <feComposite in2="SourceAlpha" operator="in"></feComposite>
+          <feGaussianBlur stdDeviation="3"></feGaussianBlur>
+          <feOffset dx="0" dy="0" result="afterOffset"></feOffset>
+          <feFlood flood-color="#000000" flood-opacity="0.19"></feFlood>
+          <feComposite in2="afterOffset" operator="in"></feComposite>
+          <feMorphology operator="dilate" radius="2"></feMorphology>
+          <feComposite in2="SourceAlpha" operator="out"></feComposite>
+        </filter>
+        <path d="M371.55 298.69C371.55 325.5 349.78 347.26 322.97 347.26C296.17 347.26 274.4 325.5 274.4 298.69C274.4 271.88 296.17 250.12 322.97 250.12C349.78 250.12 371.55 271.88 371.55 298.69Z" id="d1GSMS2lxo" fill="white" fill-opacity="1" filter="url(#shadow7795251)"></path>
+      </g>
+      <use xlink:href="#e1Jmp1wHnn" opacity="1" fill="#ffffff" fill-opacity="1"></use>
+    </g>
+    <g>
+      <use xlink:href="#b2TUb52CVS" opacity="1" fill="#007bff" fill-opacity="1"></use>
+    </g>
+  </g>
+</svg>

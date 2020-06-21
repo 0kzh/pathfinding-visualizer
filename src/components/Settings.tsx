@@ -12,6 +12,7 @@ import styled from "styled-components";
 // import "./App.css";
 const cities: Array<pair> = [
   { value: "san_francisco", label: "San Francisco" },
+  { value: "new_york", label: "New York" },
   { value: "vancouver", label: "Vancouver" },
   { value: "waterloo", label: "Waterloo" },
 ];
@@ -25,10 +26,8 @@ const algos: Array<pair> = [
 ];
 
 interface Props {
-  startNode: ValueType<pair>;
-  endNode: ValueType<pair>;
-  setStartNodeHandler: (node: ValueType<pair>) => void;
-  setEndNodeHandler: (node: ValueType<pair>) => void;
+  startNode: string | null;
+  endNode: string | null;
 }
 
 const SettingsContainer = styled("div")`
@@ -76,12 +75,7 @@ const extendTheme = (theme: any) => {
   };
 };
 
-const Settings: React.FC<Props> = ({
-  startNode,
-  endNode,
-  setStartNodeHandler,
-  setEndNodeHandler,
-}) => {
+const Settings: React.FC<Props> = ({ startNode, endNode }) => {
   const [city, setCity] = useState<ValueType<pair>>({
     value: "san_francisco",
     label: "San Francisco",
@@ -91,31 +85,6 @@ const Settings: React.FC<Props> = ({
     value: "dijkstas",
     label: "Dijkstra's Algorithm",
   });
-
-  const loadNodes = (inputVal: any, callback: (res: Array<pair>) => void) => {
-    const p = city as pair;
-    if (hasKey(locations, p.value)) {
-      setStartNodeHandler(locations[p.value][0]);
-      setEndNodeHandler(locations[p.value][1]);
-      callback(locations[p.value]);
-    }
-  };
-
-  const Option = (props: any) => {
-    return (
-      <div
-        onMouseEnter={() => {
-          if (props.selectProps.isStart) {
-            setStartNodeHandler(props.data);
-          } else {
-            setEndNodeHandler(props.data);
-          }
-        }}
-      >
-        <components.Option {...props} />
-      </div>
-    );
-  };
 
   return (
     <SettingsContainer>
@@ -139,32 +108,9 @@ const Settings: React.FC<Props> = ({
         />
       </Setting>
 
-      <Setting>
-        <Label>start</Label>
-        <AsyncSelect
-          value={startNode}
-          isStart
-          components={{ Option }}
-          onChange={setStartNodeHandler}
-          cacheOptions
-          loadOptions={loadNodes}
-          defaultOptions
-          theme={extendTheme}
-        />
-      </Setting>
-
-      <Setting>
-        <Label>end</Label>
-        <AsyncSelect
-          value={endNode}
-          components={{ Option }}
-          onChange={setEndNodeHandler}
-          cacheOptions
-          loadOptions={loadNodes}
-          defaultOptions
-          theme={extendTheme}
-        />
-      </Setting>
+      {(!startNode || !endNode) && (
+        <p>Click anywhere to set {!startNode ? "starting" : "ending"} point</p>
+      )}
 
       <Button>Visualize</Button>
     </SettingsContainer>
