@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import ReactDOM from "react-dom";
-import { LeafletMouseEvent, Icon } from "leaflet";
+import { LeafletEvent, LeafletMouseEvent, Icon } from "leaflet";
 import { Map, Marker, Popup, TileLayer, ZoomControl } from "react-leaflet";
 import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
 import Settings from "./components/Settings";
-import { nodeInfo, qtNode, pair } from "./types";
+import { nodeInfo, qtNode, LeafletLatLng } from "./types";
 import { hasKey } from "./utils";
+import { marker } from "./Icons";
 import * as d3 from "d3-quadtree";
 
 import "./App.css";
@@ -19,6 +20,11 @@ const App: React.FC<{}> = () => {
 
   const [startNode, setStartNode] = useState<string | null>(null);
   const [endNode, setEndNode] = useState<string | null>(null);
+  const startNodeMarker = useRef<Marker>(null);
+  const endNodeMarker = useRef<Marker>(null);
+
+  const [startMarkerPos, setStartMarkerPos] = useState<LeafletLatLng>();
+  const [endMarkerPos, setEndMarkerPos] = useState<LeafletLatLng>();
 
   const [qt, setQt] = useState<d3.Quadtree<qtNode>>(d3.quadtree<qtNode>());
 
@@ -48,36 +54,92 @@ const App: React.FC<{}> = () => {
     );
   }, [nodeData]);
 
-  const icon = new Icon({
-    iconUrl: "/marker.svg",
-    iconSize: [32, 32],
-  });
+  // takes a { lat, lng } object and finds closest node
+  const findClosestNode = (latlng: LeafletLatLng) => {
+    if (qt.size() > 0) {
+      const lat = latlng.lat;
+      const lon = latlng.lng;
+      return qt.find(lat, lon);
+    }
+  };
 
   const handleClick = (e: LeafletMouseEvent) => {
-    console.log(qt.size());
-    if (qt.size() > 0 && (!startNode || !endNode)) {
-      const lat = e.latlng.lat;
-      const lon = e.latlng.lng;
-      const closest = qt.find(lat, lon);
+    if (!startNode || !endNode) {
+      const closest = findClosestNode(e.latlng);
       if (closest) {
         if (!startNode) {
           setStartNode(closest.key);
+          setStartMarkerPos({ lat: closest.lat, lng: closest.lon });
         } else {
           setEndNode(closest.key);
+          setEndMarkerPos({ lat: closest.lat, lng: closest.lon });
         }
       }
     }
   };
 
+  const onStartNodeDrag = async (e: LeafletMouseEvent) => {
+    const closest = findClosestNode(e.latlng);
+    if (startNodeMarker && startNodeMarker.current) {
+      const latlng = startNodeMarker.current.leafletElement.getLatLng();
+      setStartMarkerPos({ lat: latlng.lat, lng: latlng.lng });
+    }
+    if (closest) {
+      setStartNode(closest.key);
+    }
+  };
+
+  const onEndNodeDrag = async (e: LeafletMouseEvent) => {
+    const closest = findClosestNode(e.latlng);
+    if (endNodeMarker && endNodeMarker.current) {
+      const latlng = endNodeMarker.current.leafletElement.getLatLng();
+      setEndMarkerPos({ lat: latlng.lat, lng: latlng.lng });
+    }
+    if (closest) {
+      setEndNode(closest.key);
+    }
+  };
+
+  // on finish drag, set position to nearest
+  const onStartNodeDragEnd = () => {
+    if (startNode && hasKey(nodeData, startNode)) {
+      const node: nodeInfo = nodeData[startNode];
+      setStartMarkerPos({ lat: node.lat, lng: node.lon });
+    }
+  };
+
+  const onEndNodeDragEnd = () => {
+    if (endNode && hasKey(nodeData, endNode)) {
+      const node: nodeInfo = nodeData[endNode];
+      setEndMarkerPos({ lat: node.lat, lng: node.lon });
+    }
+  };
+
   const renderMarkers = () => {
     let markers = [];
-    if (startNode && hasKey(nodeData, startNode)) {
-      let node: nodeInfo = nodeData[startNode];
-      markers.push(<Marker position={[node.lat, node.lon]} icon={icon} />);
+    if (startMarkerPos) {
+      markers.push(
+        <Marker
+          ref={startNodeMarker}
+          position={[startMarkerPos.lat, startMarkerPos.lng]}
+          icon={marker}
+          draggable
+          ondrag={onStartNodeDrag}
+          ondragend={onStartNodeDragEnd}
+        />
+      );
     }
-    if (endNode && hasKey(nodeData, endNode)) {
-      let node: nodeInfo = nodeData[endNode];
-      markers.push(<Marker position={[node.lat, node.lon]} icon={icon} />);
+    if (endMarkerPos) {
+      markers.push(
+        <Marker
+          ref={endNodeMarker}
+          position={[endMarkerPos.lat, endMarkerPos.lng]}
+          icon={marker}
+          draggable
+          ondrag={onEndNodeDrag}
+          ondragend={onEndNodeDragEnd}
+        />
+      );
     }
     return markers;
   };

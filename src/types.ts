@@ -10,6 +10,11 @@ export interface qtNode {
   lon: number;
 }
 
+export interface LeafletLatLng {
+  lat: number;
+  lng: number;
+}
+
 export interface pair {
   label: string;
   value: string;
