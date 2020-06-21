@@ -41,22 +41,22 @@ const SettingsContainer = styled("div")`
   background: #fff;
 `;
 
-const Setting = styled("div")`
+const Setting = styled.div`
   padding-bottom: 20px;
 `;
 
-const Button = styled("button")`
+const Button = styled.button`
   width: 100%;
   cursor: pointer;
-  background-color: #333;
+  background-color: ${(props) => (props.disabled ? "#e8e8e8" : "#333")};
   padding: 0.85rem 1.85rem;
-  color: white;
+  color: ${(props) => (props.disabled ? "#c7c7c7" : "white")};
   border: 0;
   font-size: 16px;
   font-weight: bold;
 `;
 
-const Label = styled("p")`
+const Label = styled.p`
   font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
@@ -109,10 +109,12 @@ const Settings: React.FC<Props> = ({ startNode, endNode }) => {
       </Setting>
 
       {(!startNode || !endNode) && (
-        <p>Click anywhere to set {!startNode ? "starting" : "ending"} point</p>
+        <p style={{ textAlign: "center" }}>
+          Click anywhere to set {!startNode ? "starting" : "ending"} point
+        </p>
       )}
 
-      <Button>Visualize</Button>
+      <Button disabled={!startNode || !endNode}>Visualize</Button>
     </SettingsContainer>
   );
 };
