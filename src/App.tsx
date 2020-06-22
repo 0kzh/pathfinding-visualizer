@@ -18,13 +18,19 @@ const App: React.FC<{}> = () => {
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
 
-  const [startNode, setStartNode] = useState<string | null>(null);
-  const [endNode, setEndNode] = useState<string | null>(null);
+  const [startNode, setStartNode] = useState<string | null>("258968250");
+  const [endNode, setEndNode] = useState<string | null>("65296327");
   const startNodeMarker = useRef<Marker>(null);
   const endNodeMarker = useRef<Marker>(null);
 
-  const [startMarkerPos, setStartMarkerPos] = useState<LeafletLatLng>();
-  const [endMarkerPos, setEndMarkerPos] = useState<LeafletLatLng>();
+  const [startMarkerPos, setStartMarkerPos] = useState<LeafletLatLng>({
+    lat: 37.75197982788086,
+    lng: -122.42283630371094,
+  });
+  const [endMarkerPos, setEndMarkerPos] = useState<LeafletLatLng>({
+    lat: 37.76089096069336,
+    lng: -122.43502807617188,
+  });
 
   const [qt, setQt] = useState<d3.Quadtree<qtNode>>(d3.quadtree<qtNode>());
 

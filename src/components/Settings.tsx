@@ -7,6 +7,7 @@ import { nodeInfo, pair } from "../types";
 import { SelectComponents } from "react-select/src/components";
 import { ValueType } from "react-select/src/types";
 import { hasKey } from "../utils";
+import dijkstra from "../algorithms/dijkstra";
 import styled from "styled-components";
 
 // import "./App.css";
@@ -86,6 +87,13 @@ const Settings: React.FC<Props> = ({ startNode, endNode }) => {
     label: "Dijkstra's Algorithm",
   });
 
+  const doPathfinding = () => {
+    if (startNode && endNode) {
+      const shortestPath = dijkstra(startNode, endNode, () => {});
+      console.log(shortestPath);
+    }
+  };
+
   return (
     <SettingsContainer>
       <Setting>
@@ -114,7 +122,9 @@ const Settings: React.FC<Props> = ({ startNode, endNode }) => {
         </p>
       )}
 
-      <Button disabled={!startNode || !endNode}>Visualize</Button>
+      <Button disabled={!startNode || !endNode} onClick={doPathfinding}>
+        Visualize
+      </Button>
     </SettingsContainer>
   );
 };

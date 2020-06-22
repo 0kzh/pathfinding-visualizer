@@ -12,6 +12,7 @@
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
     "d3-quadtree": "^1.0.7",
+    "heapify": "^0.2.1",
     "json-loader": "^0.5.7",
     "leaflet": "^1.6.0",
     "react": "^16.13.1",
