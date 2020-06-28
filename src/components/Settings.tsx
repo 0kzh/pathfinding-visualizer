@@ -8,6 +8,8 @@ import { SelectComponents } from "react-select/src/components";
 import { ValueType } from "react-select/src/types";
 import { hasKey } from "../utils";
 import dijkstra from "../algorithms/dijkstra";
+import bfs from "../algorithms/bfs";
+import dfs from "../algorithms/dfs";
 import styled from "styled-components";
 
 // import "./App.css";
@@ -89,7 +91,9 @@ const Settings: React.FC<Props> = ({ startNode, endNode }) => {
 
   const doPathfinding = () => {
     if (startNode && endNode) {
+      const canReach = dfs(startNode, endNode, () => {});
       const shortestPath = dijkstra(startNode, endNode, () => {});
+      console.log(canReach);
       console.log(shortestPath);
     }
   };

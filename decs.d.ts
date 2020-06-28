@@ -1,1 +1,1 @@
-declare module "heapify";
+declare module "tinyqueue";
