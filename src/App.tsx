@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import ReactDOM from "react-dom";
-import { LeafletEvent, LeafletMouseEvent, Icon } from "leaflet";
+import { LeafletEvent, LeafletMouseEvent, Icon, LatLng } from "leaflet";
 import {
   Map,
   Marker,
@@ -9,12 +9,15 @@ import {
   TileLayer,
   ZoomControl,
 } from "react-leaflet";
+
+import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPolyline";
+
 import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
 import findPath from "./pathfinding";
 import Settings from "./components/Settings";
-import { nodeInfo, qtNode, LeafletLatLng } from "./types";
+import { nodeInfo, qtNode } from "./types";
 import { hasKey } from "./utils";
 import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
@@ -40,18 +43,14 @@ const App: React.FC<{}> = () => {
   const [pathFound, setPathFound] = useState<boolean>(false);
 
   // final pathfinding path
-  const [path, setPath] = useState<Array<LeafletLatLng>>(
-    new Array<LeafletLatLng>()
-  );
+  const [path, setPath] = useState<Array<LatLng>>(new Array<LatLng>());
 
-  const [startMarkerPos, setStartMarkerPos] = useState<LeafletLatLng>({
-    lat: 37.75197982788086,
-    lng: -122.42283630371094,
-  });
-  const [endMarkerPos, setEndMarkerPos] = useState<LeafletLatLng>({
-    lat: 37.76089096069336,
-    lng: -122.43502807617188,
-  });
+  const [startMarkerPos, setStartMarkerPos] = useState<LatLng>(
+    new LatLng(37.75197982788086, -122.42283630371094)
+  );
+  const [endMarkerPos, setEndMarkerPos] = useState<LatLng>(
+    new LatLng(37.76089096069336, -122.43502807617188)
+  );
 
   const [qt, setQt] = useState<d3.Quadtree<qtNode>>(d3.quadtree<qtNode>());
 
@@ -82,7 +81,7 @@ const App: React.FC<{}> = () => {
   }, [nodeData]);
 
   // takes a { lat, lng } object and finds closest node
-  const findClosestNode = (latlng: LeafletLatLng) => {
+  const findClosestNode = (latlng: LatLng) => {
     if (qt.size() > 0) {
       const lat = latlng.lat;
       const lon = latlng.lng;
@@ -96,10 +95,10 @@ const App: React.FC<{}> = () => {
       if (closest) {
         if (!startNode) {
           setStartNode(closest.key);
-          setStartMarkerPos({ lat: closest.lat, lng: closest.lon });
+          setStartMarkerPos(new LatLng(closest.lat, closest.lon));
         } else {
           setEndNode(closest.key);
-          setEndMarkerPos({ lat: closest.lat, lng: closest.lon });
+          setEndMarkerPos(new LatLng(closest.lat, closest.lon));
         }
       }
     }
@@ -109,7 +108,7 @@ const App: React.FC<{}> = () => {
     const closest = findClosestNode(e.latlng);
     if (startNodeMarker && startNodeMarker.current) {
       const latlng = startNodeMarker.current.leafletElement.getLatLng();
-      setStartMarkerPos({ lat: latlng.lat, lng: latlng.lng });
+      setStartMarkerPos(new LatLng(latlng.lat, latlng.lng));
     }
     if (closest) {
       setStartNode(closest.key);
@@ -120,7 +119,7 @@ const App: React.FC<{}> = () => {
     const closest = findClosestNode(e.latlng);
     if (endNodeMarker && endNodeMarker.current) {
       const latlng = endNodeMarker.current.leafletElement.getLatLng();
-      setEndMarkerPos({ lat: latlng.lat, lng: latlng.lng });
+      setEndMarkerPos(new LatLng(latlng.lat, latlng.lng));
     }
     if (closest) {
       setEndNode(closest.key);
@@ -131,19 +130,21 @@ const App: React.FC<{}> = () => {
   const onStartNodeDragEnd = () => {
     if (startNode && hasKey(nodeData, startNode)) {
       const node: nodeInfo = nodeData[startNode];
-      setStartMarkerPos({ lat: node.lat, lng: node.lon });
+      setStartMarkerPos(new LatLng(node.lat, node.lon));
     }
   };
 
   const onEndNodeDragEnd = () => {
     if (endNode && hasKey(nodeData, endNode)) {
       const node: nodeInfo = nodeData[endNode];
-      setEndMarkerPos({ lat: node.lat, lng: node.lon });
+      setEndMarkerPos(new LatLng(node.lat, node.lon));
     }
   };
 
-  const runPathfinding = async (delayInMs: number) => {
-    setPathFound(false);
+  const runPathfinding = async (delayInMs: number, shouldReset: boolean) => {
+    if (shouldReset) {
+      setPathFound(false);
+    }
     if (startNode !== null && endNode !== null) {
       const resultPath = await findPath(
         startNode,
@@ -161,7 +162,7 @@ const App: React.FC<{}> = () => {
   useEffect(() => {
     // on start, end node change, redo pathfinding
     if (pathFound) {
-      runPathfinding(0);
+      runPathfinding(0, false);
     }
   }, [startNode, endNode]);
 
@@ -203,7 +204,7 @@ const App: React.FC<{}> = () => {
     // setNodes(new Set<string>());
   };
 
-  const pathfindingComplete = (path: Array<LeafletLatLng>) => {
+  const pathfindingComplete = (path: Array<LatLng>) => {
     setPath(path);
     // clearNodes();
   };
@@ -214,7 +215,7 @@ const App: React.FC<{}> = () => {
         startNode={startNode}
         endNode={endNode}
         runPathfindingHandler={() => {
-          runPathfinding(100);
+          runPathfinding(100, true);
         }}
       />
       <Map
@@ -263,7 +264,7 @@ const App: React.FC<{}> = () => {
         {renderMarkers()}
 
         {/* Render final path, if exists */}
-        {pathFound && <Polyline positions={path} />}
+        {pathFound && <AnimatedPolyline positions={path} />}
       </Map>
     </div>
   );
