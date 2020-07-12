@@ -1,14 +1,22 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import ReactDOM from "react-dom";
 import { LeafletEvent, LeafletMouseEvent, Icon } from "leaflet";
-import { Map, Marker, Popup, TileLayer, ZoomControl } from "react-leaflet";
+import {
+  Map,
+  Marker,
+  Polyline,
+  PolylineProps,
+  TileLayer,
+  ZoomControl,
+} from "react-leaflet";
 import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
+import findPath from "./pathfinding";
 import Settings from "./components/Settings";
 import { nodeInfo, qtNode, LeafletLatLng } from "./types";
 import { hasKey } from "./utils";
-import { marker } from "./Icons";
+import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
 
 import "./App.css";
@@ -18,10 +26,23 @@ const App: React.FC<{}> = () => {
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
 
+  // start and end markers
   const [startNode, setStartNode] = useState<string | null>("258968250");
   const [endNode, setEndNode] = useState<string | null>("65296327");
   const startNodeMarker = useRef<Marker>(null);
   const endNodeMarker = useRef<Marker>(null);
+
+  // pathfinding state
+  const [nodes, setNodes] = useState<Array<string>>(new Array<string>());
+  const [prevNodes, setPrevNodes] = useState<Array<string>>(
+    new Array<string>()
+  );
+  const [pathFound, setPathFound] = useState<boolean>(false);
+
+  // final pathfinding path
+  const [path, setPath] = useState<Array<LeafletLatLng>>(
+    new Array<LeafletLatLng>()
+  );
 
   const [startMarkerPos, setStartMarkerPos] = useState<LeafletLatLng>({
     lat: 37.75197982788086,
@@ -121,6 +142,29 @@ const App: React.FC<{}> = () => {
     }
   };
 
+  const runPathfinding = async (delayInMs: number) => {
+    setPathFound(false);
+    if (startNode !== null && endNode !== null) {
+      const resultPath = await findPath(
+        startNode,
+        endNode,
+        delayInMs,
+        addNodes
+      );
+      if (resultPath) {
+        setPathFound(true);
+        pathfindingComplete(resultPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    // on start, end node change, redo pathfinding
+    if (pathFound) {
+      runPathfinding(0);
+    }
+  }, [startNode, endNode]);
+
   const renderMarkers = () => {
     let markers = [];
     if (startMarkerPos) {
@@ -150,10 +194,31 @@ const App: React.FC<{}> = () => {
     return markers;
   };
 
+  const addNodes = (nodesToRender: string[]) => {
+    setNodes(nodesToRender);
+    setPrevNodes((oldNodes) => oldNodes.concat(nodesToRender));
+  };
+
+  const clearNodes = () => {
+    // setNodes(new Set<string>());
+  };
+
+  const pathfindingComplete = (path: Array<LeafletLatLng>) => {
+    setPath(path);
+    // clearNodes();
+  };
+
   return (
     <div className="App">
-      <Settings startNode={startNode} endNode={endNode} />
+      <Settings
+        startNode={startNode}
+        endNode={endNode}
+        runPathfindingHandler={() => {
+          runPathfinding(100);
+        }}
+      />
       <Map
+        preferCanvas
         center={[lat, lng]}
         zoom={zoom}
         zoomControl={false}
@@ -165,7 +230,40 @@ const App: React.FC<{}> = () => {
         />
 
         <ZoomControl position={"bottomleft"} />
+
+        {/* This renders nodes for the current iteration */}
+        {Array.from(nodes).map((node: string) => {
+          if (hasKey(nodeData, node)) {
+            const val: nodeInfo = nodeData[node];
+            return (
+              <Marker
+                key={node}
+                position={[val.lat, val.lon]}
+                icon={nodeMarker}
+              />
+            );
+          }
+        })}
+
+        {/* Render visited nodes */}
+        {/* {Array.from(prevNodes).map((node: string) => {
+          if (hasKey(nodeData, node)) {
+            const val: nodeInfo = nodeData[node];
+            return (
+              <Marker
+                key={node}
+                position={[val.lat, val.lon]}
+                icon={visitedNodeMarker}
+              />
+            );
+          }
+        })} */}
+
+        {/* Render start/end markers */}
         {renderMarkers()}
+
+        {/* Render final path, if exists */}
+        {pathFound && <Polyline positions={path} />}
       </Map>
     </div>
   );

@@ -3,10 +3,11 @@ import AsyncSelect from "react-select/async";
 import Select, { components } from "react-select";
 import locations from "../data/locations.json";
 import CSS from "csstype";
-import { nodeInfo, pair } from "../types";
+import { nodeInfo, pair, LeafletLatLng } from "../types";
 import { SelectComponents } from "react-select/src/components";
 import { ValueType } from "react-select/src/types";
 import { hasKey } from "../utils";
+import nodeData from "../data/sanfran.json";
 import dijkstra from "../algorithms/dijkstra";
 import bfs from "../algorithms/bfs";
 import dfs from "../algorithms/dfs";
@@ -31,6 +32,7 @@ const algos: Array<pair> = [
 interface Props {
   startNode: string | null;
   endNode: string | null;
+  runPathfindingHandler: () => void;
 }
 
 const SettingsContainer = styled("div")`
@@ -78,7 +80,11 @@ const extendTheme = (theme: any) => {
   };
 };
 
-const Settings: React.FC<Props> = ({ startNode, endNode }) => {
+const Settings: React.FC<Props> = ({
+  startNode,
+  endNode,
+  runPathfindingHandler,
+}) => {
   const [city, setCity] = useState<ValueType<pair>>({
     value: "san_francisco",
     label: "San Francisco",
@@ -88,15 +94,6 @@ const Settings: React.FC<Props> = ({ startNode, endNode }) => {
     value: "dijkstas",
     label: "Dijkstra's Algorithm",
   });
-
-  const doPathfinding = () => {
-    if (startNode && endNode) {
-      const canReach = dfs(startNode, endNode, () => {});
-      const shortestPath = dijkstra(startNode, endNode, () => {});
-      console.log(canReach);
-      console.log(shortestPath);
-    }
-  };
 
   return (
     <SettingsContainer>
@@ -126,7 +123,7 @@ const Settings: React.FC<Props> = ({ startNode, endNode }) => {
         </p>
       )}
 
-      <Button disabled={!startNode || !endNode} onClick={doPathfinding}>
+      <Button disabled={!startNode || !endNode} onClick={runPathfindingHandler}>
         Visualize
       </Button>
     </SettingsContainer>

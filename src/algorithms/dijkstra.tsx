@@ -7,10 +7,6 @@ interface distanceDict {
   [key: string]: number;
 }
 
-interface visitedDict {
-  [key: string]: boolean;
-}
-
 interface previousDict {
   [key: string]: string | null;
 }
@@ -20,9 +16,18 @@ interface heapObj {
   distance: number;
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // find shortest path from start to end using dijkstra's
 // cb is called when a new node is visited
-const dijkstra = (start: string, end: string, cb: () => void) => {
+const dijkstra = async (
+  start: string,
+  end: string,
+  delay: number,
+  cb: (toRender: string[]) => void
+) => {
   let queue = new TinyQueue([], (a: heapObj, b: heapObj) => {
     return a.distance - b.distance;
   });
@@ -30,6 +35,10 @@ const dijkstra = (start: string, end: string, cb: () => void) => {
   let distances: distanceDict = {};
   let previous: previousDict = {};
   let path: Array<string> = [];
+
+  // render settings
+  let total: number = 0;
+  let nextRender: Array<string> = [];
 
   // build min heap
   distances[start] = 0;
@@ -44,8 +53,21 @@ const dijkstra = (start: string, end: string, cb: () => void) => {
 
   while (queue.length > 0) {
     let smallest: string = queue.pop().key;
+    nextRender.push(smallest);
+    total++;
+
+    const nodesPerRender = 0.0005 * total;
+
+    if (total % nodesPerRender === 0) {
+      if (delay > 0) {
+        cb(nextRender);
+        await sleep(delay);
+      }
+      nextRender = [];
+    }
 
     if (smallest == end) {
+      cb(nextRender);
       while (previous[smallest]) {
         path.push(smallest);
         const prev = previous[smallest];
@@ -70,11 +92,9 @@ const dijkstra = (start: string, end: string, cb: () => void) => {
           queue.push({ key: neighbor, distance: alt });
         }
       });
-    } else {
-      console.log(smallest + " doesnt exist!");
     }
   }
-  // concast start because previous[start] won't exist
+  // concat start because previous[start] won't exist
   return path.concat(start).reverse();
 };
 
