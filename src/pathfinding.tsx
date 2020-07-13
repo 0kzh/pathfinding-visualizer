@@ -13,12 +13,14 @@ const findPath = async (
   addNodesHandler: (node: string[]) => void
 ) => {
   if (startNode && endNode) {
-    const shortestPath = await dijkstra(
+    const shortestPath = await bfs(
       startNode,
       endNode,
       delayInMs,
       addNodesHandler
     );
+
+    console.log(shortestPath);
 
     if (!shortestPath) return;
 

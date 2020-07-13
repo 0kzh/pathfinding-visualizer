@@ -28,10 +28,6 @@ declare global {
 
 let Leaflet_module = window.L ? window.L : (require("leaflet") as LeafletType);
 
-type slideOptions = {
-  snakingSpeed: number;
-};
-
 class Animated_Polyline extends Leaflet_module.Polyline {
   // Hi-res timestamp indicating when the last calculations for vertices and
   // distance took place.
@@ -49,15 +45,12 @@ class Animated_Polyline extends Leaflet_module.Polyline {
   // Flag
   private _snaking = false;
   private _snakingTime = performance.now();
+  private _snakeSpeed = 200;
   private _snakeLatLngs: any;
-
-  addInitHook = () => {
-    this.snakeIn();
-  };
 
   /// TODO: accept a 'map' parameter, fall back to addTo() in case
   /// performance.now is not available.
-  snakeIn = () => {
+  snakeIn = (snakeSpeed: number) => {
     if (this._snakeLatLngs.length == 0) return;
     if (this._snaking) {
       return;
@@ -72,6 +65,7 @@ class Animated_Polyline extends Leaflet_module.Polyline {
     }
 
     this._snaking = true;
+    this._snakeSpeed = snakeSpeed;
     this._snakingTime = performance.now();
     this._snakingVertices = this._snakingRings = this._snakingDistance = 0;
 
@@ -84,7 +78,6 @@ class Animated_Polyline extends Leaflet_module.Polyline {
     // Init with just the first (0th) vertex in a new ring
     // Twice because the first thing that this._snake is is chop the head.
     this.setLatLngs([[this._snakeLatLngs[0][0], this._snakeLatLngs[0][0]]]);
-
     this._snake();
     this.fire("snakestart");
     return this;
@@ -100,11 +93,10 @@ class Animated_Polyline extends Leaflet_module.Polyline {
     var now = performance.now();
     var diff = now - this._snakingTime; // In milliseconds
     // TODO: change
-    var forward = (diff * 200) / 1000; // In pixels
+    var forward = (diff * this._snakeSpeed) / 1000; // In pixels
     this._snakingTime = now;
 
     // Chop the head from the previous frame
-    // this._latlngs[this._snakingRings].pop();
     const prev = this.getLatLngs()[this._snakingRings];
     if (Array.isArray(prev)) {
       prev.pop();

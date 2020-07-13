@@ -264,7 +264,7 @@ const App: React.FC<{}> = () => {
         {renderMarkers()}
 
         {/* Render final path, if exists */}
-        {pathFound && <AnimatedPolyline positions={path} />}
+        {pathFound && <AnimatedPolyline positions={path} snakeSpeed={300} />}
       </Map>
     </div>
   );

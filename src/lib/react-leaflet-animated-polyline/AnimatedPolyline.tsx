@@ -7,33 +7,31 @@ import {
 } from "leaflet";
 import { withLeaflet, Path, MapLayerProps } from "react-leaflet";
 
-type LeafletElement = LeafletPolyline | Animated_Polyline;
+type LeafletElement = Animated_Polyline;
 
-type PolylineProps = {
+type Props = {
+  snakeSpeed: number;
   positions: LatLng[];
 } & MapLayerProps &
   PolylineOptions &
   PathOptions &
   object;
 
-class AnimatedPolyline extends Path<PolylineProps, LeafletElement> {
-  public createLeafletElement(props: PolylineProps): LeafletElement {
+class AnimatedPolyline extends Path<Props, LeafletElement> {
+  public createLeafletElement(props: Props): LeafletElement {
     const el = new Animated_Polyline(props.positions, this.getOptions(props));
     this.contextValue = { ...props.leaflet, popupContainer: el };
     return el;
   }
 
-  public updateLeafletElement(
-    fromProps: PolylineProps,
-    toProps: PolylineProps
-  ) {
+  public updateLeafletElement(fromProps: Props, toProps: Props) {
     if (
       toProps.positions !== fromProps.positions &&
-      toProps.positions.length > 0 &&
-      this.leafletElement instanceof Animated_Polyline
+      toProps.positions.length > 0
     ) {
       this.leafletElement.setSnakeLatLngs(toProps.positions);
-      this.leafletElement.snakeIn();
+      console.log("new:" + toProps.snakeSpeed);
+      this.leafletElement.snakeIn(toProps.snakeSpeed);
     }
   }
 }

@@ -6,6 +6,10 @@ interface previousDict {
   [key: string]: Array<string>;
 }
 
+interface indexDict {
+  [key: string]: number;
+}
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -22,6 +26,7 @@ const dfs = async (
   let visitedNodes = new Set<string>();
   let previous: previousDict = {};
   let path: Array<string> = [];
+  let pathVisited: indexDict = {};
 
   let total: number = 0;
   let nextRender: Array<string> = [];
@@ -54,9 +59,21 @@ const dfs = async (
       while (previous[node].length > 0) {
         const first = previous[node].shift();
         if (!first) continue;
+        pathVisited[first] = path.length;
         path.push(first);
         node = first;
       }
+
+      let trimmed = [];
+      for (let i = path.length - 1; i > 0; i--) {
+        const cur = path[i];
+        const lastIndex = pathVisited[cur];
+
+        if (i == lastIndex) {
+          trimmed.push(cur);
+        }
+      }
+
       return path;
     }
     if (!visitedNodes.has(node)) {
