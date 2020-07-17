@@ -17,7 +17,7 @@ const bfs = async (
   start: string,
   end: string,
   delay: number,
-  cb: (toRender: string[]) => void
+  cb: (toRender: Set<string>) => void
 ) => {
   // we use nulls to keep track of the current level
   let queue: Deque<string | null> = new Deque();
@@ -27,7 +27,7 @@ const bfs = async (
 
   let level: number = 0;
   let total: number = 0;
-  let nextRender: Array<string> = [];
+  let nextRender: Set<string> = new Set<string>();
 
   Object.keys(nodeData).forEach((node: string) => {
     previous[node] = null;
@@ -44,7 +44,7 @@ const bfs = async (
         cb(nextRender);
         await sleep(delay);
       }
-      nextRender = [];
+      nextRender = new Set<string>();
       queue.push(null);
       continue;
     }
@@ -55,7 +55,7 @@ const bfs = async (
     total++;
 
     if (total % (level * 0.5) == 0 && !rendered.has(node)) {
-      nextRender.push(node);
+      nextRender.add(node);
       rendered.add(node);
     }
 
@@ -68,7 +68,7 @@ const bfs = async (
           node = prev;
         }
       }
-      return path;
+      return path.reverse();
     }
 
     if (hasKey(nodeData, node)) {

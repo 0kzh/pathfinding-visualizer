@@ -62,9 +62,9 @@ const dijkstra = async (
       if (delay > 0 && nextRender.size > 0) {
         cb(nextRender);
         await sleep(delay);
+        nextRender.clear();
+        rendered.clear();
       }
-      nextRender.clear();
-      rendered.clear();
       continue;
     }
 

@@ -30,8 +30,11 @@ class AnimatedPolyline extends Path<Props, LeafletElement> {
       toProps.positions.length > 0
     ) {
       this.leafletElement.setSnakeLatLngs(toProps.positions);
-      console.log("new:" + toProps.snakeSpeed);
-      this.leafletElement.snakeIn(toProps.snakeSpeed);
+      if (fromProps.positions.length == 0) {
+        this.leafletElement.snakeIn(toProps.snakeSpeed);
+      } else {
+        this.leafletElement.snakeIn(Infinity);
+      }
     }
   }
 }

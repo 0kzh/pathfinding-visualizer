@@ -17,7 +17,7 @@ import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
 import findPath from "./pathfinding";
 import Settings from "./components/Settings";
-import { nodeInfo, qtNode } from "./types";
+import { nodeInfo, qtNode, pair } from "./types";
 import { hasKey } from "./utils";
 import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
@@ -42,6 +42,11 @@ const App: React.FC<{}> = () => {
 
   // final pathfinding path
   const [path, setPath] = useState<Array<LatLng>>(new Array<LatLng>());
+
+  const [algorithm, setAlgorithm] = useState<ValueType<pair>>({
+    value: "dijkstas",
+    label: "Dijkstra's Algorithm",
+  });
 
   const [startMarkerPos, setStartMarkerPos] = useState<LatLng>(
     new LatLng(37.75197982788086, -122.42283630371094)
@@ -141,12 +146,12 @@ const App: React.FC<{}> = () => {
 
   const runPathfinding = async (delayInMs: number, shouldReset: boolean) => {
     if (shouldReset) {
-      setPathFound(false);
       setNodes(new Set<string>());
       setPrevNodes(new Set<string>());
     }
     if (startNode !== null && endNode !== null) {
       const resultPath = await findPath(
+        algorithm,
         startNode,
         endNode,
         delayInMs,
@@ -162,7 +167,7 @@ const App: React.FC<{}> = () => {
   useEffect(() => {
     // on start, end node change, redo pathfinding
     if (pathFound) {
-      runPathfinding(0, false);
+      runPathfinding(0, true);
     }
   }, [startNode, endNode]);
 
@@ -217,6 +222,8 @@ const App: React.FC<{}> = () => {
         runPathfindingHandler={() => {
           runPathfinding(100, true);
         }}
+        algorithm={algorithm}
+        setAlgorithm={setAlgorithm}
       />
       <Map
         preferCanvas

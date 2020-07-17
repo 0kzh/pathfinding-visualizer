@@ -6,11 +6,6 @@ import CSS from "csstype";
 import { nodeInfo, pair, LeafletLatLng } from "../types";
 import { SelectComponents } from "react-select/src/components";
 import { ValueType } from "react-select/src/types";
-import { hasKey } from "../utils";
-import nodeData from "../data/sanfran.json";
-import dijkstra from "../algorithms/dijkstra";
-import bfs from "../algorithms/bfs";
-import dfs from "../algorithms/dfs";
 import styled from "styled-components";
 
 // import "./App.css";
@@ -33,6 +28,8 @@ interface Props {
   startNode: string | null;
   endNode: string | null;
   runPathfindingHandler: () => void;
+  algorithm: ValueType<pair>;
+  setAlgorithm: (algorithm: ValueType<pair>) => void;
 }
 
 const SettingsContainer = styled("div")`
@@ -84,15 +81,12 @@ const Settings: React.FC<Props> = ({
   startNode,
   endNode,
   runPathfindingHandler,
+  algorithm,
+  setAlgorithm,
 }) => {
   const [city, setCity] = useState<ValueType<pair>>({
     value: "san_francisco",
     label: "San Francisco",
-  });
-
-  const [algorithm, setAlgorithm] = useState<ValueType<pair>>({
-    value: "dijkstas",
-    label: "Dijkstra's Algorithm",
   });
 
   return (
