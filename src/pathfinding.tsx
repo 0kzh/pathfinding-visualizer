@@ -10,10 +10,10 @@ const findPath = async (
   startNode: string,
   endNode: string,
   delayInMs: number,
-  addNodesHandler: (node: string[]) => void
+  addNodesHandler: (node: Set<string>) => void
 ) => {
   if (startNode && endNode) {
-    const shortestPath = await bfs(
+    const shortestPath = await dfs(
       startNode,
       endNode,
       delayInMs,

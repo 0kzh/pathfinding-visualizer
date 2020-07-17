@@ -6,6 +6,10 @@ interface previousDict {
   [key: string]: Array<string>;
 }
 
+interface parentDict {
+  [key: string]: string;
+}
+
 interface indexDict {
   [key: string]: number;
 }
@@ -20,29 +24,23 @@ const dfs = async (
   start: string,
   end: string,
   delay: number,
-  cb: (toRender: string[]) => void
+  cb: (toRender: Set<string>) => void
 ) => {
-  let stack: string[] = [];
+  let stack: [string, Array<string>][] = [];
   let visitedNodes = new Set<string>();
-  let previous: previousDict = {};
-  let path: Array<string> = [];
-  let pathVisited: indexDict = {};
 
   let total: number = 0;
-  let nextRender: Array<string> = [];
+  let nextRender: Set<string> = new Set<string>();
 
-  Object.keys(nodeData).forEach((node: string) => {
-    previous[node] = [];
-  });
-
-  stack.push(start);
+  stack.push([start, [start]]);
   while (stack.length > 0) {
-    const popped: string | undefined = stack.pop();
+    const popped: [string, Array<string>] | undefined = stack.pop();
     if (!popped) return;
-    let node = popped;
+    let node = popped[0];
+    const path = popped[1];
 
     if (total % 50 === 0) {
-      nextRender.push(node);
+      nextRender.add(node);
     }
     total++;
     const nodesPerRender = 0.0001 * total;
@@ -52,29 +50,11 @@ const dfs = async (
         cb(nextRender);
         await sleep(delay);
       }
-      nextRender = [];
+      nextRender = new Set<string>();
     }
 
     if (node === end) {
-      while (previous[node].length > 0) {
-        const first = previous[node].shift();
-        if (!first) continue;
-        pathVisited[first] = path.length;
-        path.push(first);
-        node = first;
-      }
-
-      let trimmed = [];
-      for (let i = path.length - 1; i > 0; i--) {
-        const cur = path[i];
-        const lastIndex = pathVisited[cur];
-
-        if (i == lastIndex) {
-          trimmed.push(cur);
-        }
-      }
-
-      return path;
+      return path.reverse();
     }
     if (!visitedNodes.has(node)) {
       visitedNodes.add(node);
@@ -83,8 +63,7 @@ const dfs = async (
         let neighbors: Array<string> = smallestNode.adj;
 
         neighbors.forEach((neighbor) => {
-          stack.push(neighbor);
-          previous[neighbor].push(node);
+          stack.push([neighbor, [neighbor, ...path]]);
         });
       }
     }

@@ -12,5 +12,5 @@ export const nodeMarker = new Icon({
 
 export const visitedNodeMarker = new Icon({
   iconUrl: "/visitedNode.svg",
-  iconSize: [1, 1],
+  iconSize: [8, 8],
 });

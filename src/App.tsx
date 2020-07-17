@@ -36,10 +36,8 @@ const App: React.FC<{}> = () => {
   const endNodeMarker = useRef<Marker>(null);
 
   // pathfinding state
-  const [nodes, setNodes] = useState<Array<string>>(new Array<string>());
-  const [prevNodes, setPrevNodes] = useState<Array<string>>(
-    new Array<string>()
-  );
+  const [nodes, setNodes] = useState<Set<string>>(new Set<string>());
+  const [prevNodes, setPrevNodes] = useState<Set<string>>(new Set<string>());
   const [pathFound, setPathFound] = useState<boolean>(false);
 
   // final pathfinding path
@@ -144,6 +142,8 @@ const App: React.FC<{}> = () => {
   const runPathfinding = async (delayInMs: number, shouldReset: boolean) => {
     if (shouldReset) {
       setPathFound(false);
+      setNodes(new Set<string>());
+      setPrevNodes(new Set<string>());
     }
     if (startNode !== null && endNode !== null) {
       const resultPath = await findPath(
@@ -195,9 +195,9 @@ const App: React.FC<{}> = () => {
     return markers;
   };
 
-  const addNodes = (nodesToRender: string[]) => {
+  const addNodes = (nodesToRender: Set<string>) => {
     setNodes(nodesToRender);
-    setPrevNodes((oldNodes) => oldNodes.concat(nodesToRender));
+    setPrevNodes((oldNodes) => new Set([...oldNodes, ...nodesToRender]));
   };
 
   const clearNodes = () => {
@@ -233,32 +233,28 @@ const App: React.FC<{}> = () => {
         <ZoomControl position={"bottomleft"} />
 
         {/* This renders nodes for the current iteration */}
-        {Array.from(nodes).map((node: string) => {
+        {Array.from(prevNodes).map((node: string) => {
           if (hasKey(nodeData, node)) {
             const val: nodeInfo = nodeData[node];
-            return (
-              <Marker
-                key={node}
-                position={[val.lat, val.lon]}
-                icon={nodeMarker}
-              />
-            );
+            if (nodes.has(node)) {
+              return (
+                <Marker
+                  key={node}
+                  position={[val.lat, val.lon]}
+                  icon={nodeMarker}
+                />
+              );
+            } else {
+              return (
+                <Marker
+                  key={node}
+                  position={[val.lat, val.lon]}
+                  icon={visitedNodeMarker}
+                />
+              );
+            }
           }
         })}
-
-        {/* Render visited nodes */}
-        {/* {Array.from(prevNodes).map((node: string) => {
-          if (hasKey(nodeData, node)) {
-            const val: nodeInfo = nodeData[node];
-            return (
-              <Marker
-                key={node}
-                position={[val.lat, val.lon]}
-                icon={visitedNodeMarker}
-              />
-            );
-          }
-        })} */}
 
         {/* Render start/end markers */}
         {renderMarkers()}

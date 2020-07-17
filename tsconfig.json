@@ -12,8 +12,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "downlevelIteration": true,
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["src", "decs.d.ts"]
+  "include": [
+    "src",
+    "decs.d.ts",
+    "node_modules/react-leaflet-animated-polyline/AnimatedPolyline.tsx"
+  ]
 }

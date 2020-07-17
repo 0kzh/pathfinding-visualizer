@@ -8,10 +8,7 @@
   </defs>
   <g>
     <g>
-      <use xlink:href="#aoTMYcsne" opacity="1" fill="#FFA0AC" fill-opacity="0.5"></use>
-      <g>
-        <use xlink:href="#aoTMYcsne" opacity="1" fill-opacity="0" stroke="#ffffff" stroke-width="1" stroke-opacity="0.81"></use>
-      </g>
+      <use xlink:href="#aoTMYcsne" opacity="1" fill="#FFB8BE" fill-opacity="1.0"></use>
     </g>
   </g>
 </svg>

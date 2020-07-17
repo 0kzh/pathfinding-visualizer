@@ -26,7 +26,7 @@ const dijkstra = async (
   start: string,
   end: string,
   delay: number,
-  cb: (toRender: string[]) => void
+  cb: (toRender: Set<string>) => void
 ) => {
   let queue = new TinyQueue([], (a: heapObj, b: heapObj) => {
     return a.distance - b.distance;
@@ -35,13 +35,16 @@ const dijkstra = async (
   let distances: distanceDict = {};
   let previous: previousDict = {};
   let path: Array<string> = [];
+  let rendered: Set<string> = new Set<string>();
 
   // render settings
+  let level: number = 0;
   let total: number = 0;
-  let nextRender: Array<string> = [];
+  let nextRender: Set<string> = new Set<string>();
 
   // build min heap
   distances[start] = 0;
+  queue.push({ key: "_", distance: 1 });
 
   Object.keys(nodeData).forEach((node: string) => {
     if (node !== start) {
@@ -52,18 +55,24 @@ const dijkstra = async (
   });
 
   while (queue.length > 0) {
-    let smallest: string = queue.pop().key;
-    nextRender.push(smallest);
-    total++;
+    let temp = queue.pop();
+    let smallest: string = temp.key;
 
-    const nodesPerRender = 0.0005 * total;
-
-    if (total % nodesPerRender === 0) {
-      if (delay > 0) {
+    if (smallest === "_") {
+      if (delay > 0 && nextRender.size > 0) {
         cb(nextRender);
         await sleep(delay);
       }
-      nextRender = [];
+      nextRender.clear();
+      rendered.clear();
+      continue;
+    }
+
+    total++;
+
+    if (total % (level ^ 10) == 0 && !rendered.has(smallest)) {
+      nextRender.add(smallest);
+      rendered.add(smallest);
     }
 
     if (smallest == end) {
@@ -82,9 +91,10 @@ const dijkstra = async (
       let smallestNode: nodeInfo = nodeData[smallest];
       let neighbors: Array<string> = smallestNode.adj;
 
+      let maxDist = 0;
       neighbors.forEach((neighbor) => {
         let alt = distances[smallest] + 1; // unweighted
-
+        maxDist = Math.max(maxDist, alt);
         if (alt < distances[neighbor]) {
           distances[neighbor] = alt;
           previous[neighbor] = smallest;
@@ -92,6 +102,10 @@ const dijkstra = async (
           queue.push({ key: neighbor, distance: alt });
         }
       });
+      if (maxDist > level) {
+        level = maxDist;
+        queue.push({ key: "_", distance: maxDist });
+      }
     }
   }
   // concat start because previous[start] won't exist
