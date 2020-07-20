@@ -6,7 +6,7 @@ export const marker = new Icon({
 });
 
 export const nodeMarker = new Icon({
-  iconUrl: "/node.svg",
+  iconUrl: "/small.png",
   iconSize: [8, 8],
 });
 

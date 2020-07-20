@@ -11,6 +11,7 @@ import {
 } from "react-leaflet";
 
 import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPolyline";
+import CanvasMarkersLayer from "./lib/react-leaflet-canvas-markers/CanvasMarkersLayer";
 
 import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
@@ -239,29 +240,31 @@ const App: React.FC<{}> = () => {
 
         <ZoomControl position={"bottomleft"} />
 
-        {/* This renders nodes for the current iteration */}
-        {Array.from(prevNodes).map((node: string) => {
-          if (hasKey(nodeData, node)) {
-            const val: nodeInfo = nodeData[node];
-            if (nodes.has(node)) {
-              return (
-                <Marker
-                  key={node}
-                  position={[val.lat, val.lon]}
-                  icon={nodeMarker}
-                />
-              );
-            } else {
-              return (
-                <Marker
-                  key={node}
-                  position={[val.lat, val.lon]}
-                  icon={visitedNodeMarker}
-                />
-              );
+        <CanvasMarkersLayer>
+          {/* This renders nodes for the current iteration */}
+          {Array.from(prevNodes).map((node: string) => {
+            if (hasKey(nodeData, node)) {
+              const val: nodeInfo = nodeData[node];
+              if (nodes.has(node)) {
+                return (
+                  <Marker
+                    key={node}
+                    position={[val.lat, val.lon]}
+                    icon={nodeMarker}
+                  />
+                );
+              } else {
+                return (
+                  <Marker
+                    key={node}
+                    position={[val.lat, val.lon]}
+                    icon={visitedNodeMarker}
+                  />
+                );
+              }
             }
-          }
-        })}
+          })}
+        </CanvasMarkersLayer>
 
         {/* Render start/end markers */}
         {renderMarkers()}
