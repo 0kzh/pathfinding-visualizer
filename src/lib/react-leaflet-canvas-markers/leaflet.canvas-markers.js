@@ -124,7 +124,6 @@
       this._redraw(true);
     },
     _onMouseMove: function (event) {
-      console.log("moved");
       this._handleMouseHover(event);
     },
     _handleMouseHover: function (event) {

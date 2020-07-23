@@ -43,8 +43,8 @@ const bfs = async (
       if (delay > 0) {
         cb(nextRender);
         await sleep(delay);
+        nextRender = new Set<string>();
       }
-      nextRender = new Set<string>();
       queue.push(null);
       continue;
     }
@@ -54,13 +54,14 @@ const bfs = async (
     let node = prev;
     total++;
 
-    if (total % (level * 0.5) == 0 && !rendered.has(node)) {
+    if (total % (level ^ 2) == 0 && !rendered.has(node)) {
       nextRender.add(node);
       rendered.add(node);
     }
 
     if (node == end) {
       let path = [];
+      cb(nextRender);
       while (previous[node]) {
         path.push(node);
         const prev = previous[node];
