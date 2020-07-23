@@ -13,6 +13,9 @@ import {
 import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPolyline";
 import CanvasMarkersLayer from "./lib/react-leaflet-canvas-markers/CanvasMarkersLayer";
 
+// eslint-disable-next-line
+import Worker from "worker-loader!./Worker";
+
 import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
@@ -29,6 +32,8 @@ const App: React.FC<{}> = () => {
   const [lng, setLng] = useState(-122.4372);
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
+
+  const [worker, setWorker] = useState(new Worker());
 
   // start and end markers
   const [startNode, setStartNode] = useState<string | null>("258968250");
@@ -57,6 +62,25 @@ const App: React.FC<{}> = () => {
   );
 
   const [qt, setQt] = useState<d3.Quadtree<qtNode>>(d3.quadtree<qtNode>());
+
+  useEffect(() => {
+    worker.onmessage = (event: any) => {
+      const data = JSON.parse(event.data);
+      const type = data.type;
+      if (type === "updateNodes") {
+        const nodes = data.nodes;
+        if (nodes) {
+          addNodes(nodes);
+        }
+      } else if (type === "setPath") {
+        const path = data.path;
+        if (path) {
+          setPathFound(true);
+          pathfindingComplete(path);
+        }
+      }
+    };
+  }, [worker]);
 
   useEffect(() => {
     // when node data is changed, build quadtree from nodes
@@ -132,44 +156,37 @@ const App: React.FC<{}> = () => {
 
   // on finish drag, set position to nearest
   const onStartNodeDragEnd = () => {
-    if (startNode && hasKey(nodeData, startNode)) {
-      const node: nodeInfo = nodeData[startNode];
-      setStartMarkerPos(new LatLng(node.lat, node.lon));
+    if (pathFound) {
+      runPathfinding(0, true);
     }
   };
 
   const onEndNodeDragEnd = () => {
-    if (endNode && hasKey(nodeData, endNode)) {
-      const node: nodeInfo = nodeData[endNode];
-      setEndMarkerPos(new LatLng(node.lat, node.lon));
+    if (pathFound) {
+      runPathfinding(0, true);
     }
   };
 
   const runPathfinding = async (delayInMs: number, shouldReset: boolean) => {
+    console.log("called!!!");
     if (shouldReset) {
       setNodes(new Set<string>());
       setPrevNodes(new Set<string>());
     }
     if (startNode !== null && endNode !== null) {
-      const resultPath = await findPath(
-        algorithm,
-        startNode,
-        endNode,
-        delayInMs,
-        addNodes
+      worker.postMessage(
+        JSON.stringify({
+          algorithm: algorithm,
+          startNode: startNode,
+          endNode: endNode,
+          delayInMs: delayInMs,
+        })
       );
-      if (resultPath) {
-        setPathFound(true);
-        pathfindingComplete(resultPath);
-      }
     }
   };
 
   useEffect(() => {
     // on start, end node change, redo pathfinding
-    if (pathFound) {
-      runPathfinding(0, true);
-    }
   }, [startNode, endNode]);
 
   const renderMarkers = () => {

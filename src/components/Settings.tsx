@@ -1,10 +1,6 @@
 import React, { CSSProperties, useEffect, useState, useRef } from "react";
-import AsyncSelect from "react-select/async";
 import Select, { components } from "react-select";
-import locations from "../data/locations.json";
-import CSS from "csstype";
 import { nodeInfo, pair, LeafletLatLng } from "../types";
-import { SelectComponents } from "react-select/src/components";
 import { ValueType } from "react-select/src/types";
 import styled from "styled-components";
 
