@@ -156,15 +156,15 @@ const App: React.FC<{}> = () => {
 
   // on finish drag, set position to nearest
   const onStartNodeDragEnd = () => {
-    // if (pathFound) {
-    runPathfinding(0, true);
-    // }
+    if (pathFound) {
+      runPathfinding(0, true);
+    }
   };
 
   const onEndNodeDragEnd = () => {
-    // if (pathFound) {
-    runPathfinding(0, true);
-    // }
+    if (pathFound) {
+      runPathfinding(0, true);
+    }
   };
 
   const runPathfinding = async (delayInMs: number, shouldReset: boolean) => {
@@ -210,6 +210,9 @@ const App: React.FC<{}> = () => {
           position={[endMarkerPos.lat, endMarkerPos.lng]}
           icon={marker}
           draggable
+          ondragstart={() => {
+            setPath([]);
+          }}
           ondrag={onEndNodeDrag}
           ondragend={onEndNodeDragEnd}
         />
@@ -224,7 +227,7 @@ const App: React.FC<{}> = () => {
   };
 
   const clearNodes = () => {
-    // setNodes(new Set<string>());
+    setNodes(new Set<string>());
   };
 
   const pathfindingComplete = (path: Array<LatLng>) => {
@@ -287,7 +290,9 @@ const App: React.FC<{}> = () => {
         {renderMarkers()}
 
         {/* Render final path, if exists */}
-        {pathFound && <AnimatedPolyline positions={path} snakeSpeed={300} />}
+        {pathFound && path.length > 0 && (
+          <AnimatedPolyline positions={path} snakeSpeed={300} />
+        )}
       </Map>
     </div>
   );
