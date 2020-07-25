@@ -33,7 +33,7 @@ const App: React.FC<{}> = () => {
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
 
-  const [worker, setWorker] = useState(new Worker());
+  const [worker, setWorker] = useState(() => new Worker());
 
   // start and end markers
   const [startNode, setStartNode] = useState<string | null>("258968250");
@@ -68,7 +68,7 @@ const App: React.FC<{}> = () => {
       const data = JSON.parse(event.data);
       const type = data.type;
       if (type === "updateNodes") {
-        const nodes = data.nodes;
+        const nodes = new Set<string>(data.nodes);
         if (nodes) {
           addNodes(nodes);
         }
@@ -156,15 +156,15 @@ const App: React.FC<{}> = () => {
 
   // on finish drag, set position to nearest
   const onStartNodeDragEnd = () => {
-    if (pathFound) {
-      runPathfinding(0, true);
-    }
+    // if (pathFound) {
+    runPathfinding(0, true);
+    // }
   };
 
   const onEndNodeDragEnd = () => {
-    if (pathFound) {
-      runPathfinding(0, true);
-    }
+    // if (pathFound) {
+    runPathfinding(0, true);
+    // }
   };
 
   const runPathfinding = async (delayInMs: number, shouldReset: boolean) => {

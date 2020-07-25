@@ -18,10 +18,9 @@ const ctx: Worker = self as any;
 
 // Respond to message from parent thread
 ctx.addEventListener("message", async (event) => {
-  console.log("new worker!");
   const { algorithm, startNode, endNode, delayInMs } = JSON.parse(event.data);
   const addNodesHandler = (nodes: Set<string>) => {
-    ctx.postMessage(JSON.stringify({ type: "updateNodes", nodes: nodes }));
+    ctx.postMessage(JSON.stringify({ type: "updateNodes", nodes: [...nodes] }));
   };
   const path = await findPath(
     algorithm,
