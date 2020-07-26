@@ -132,8 +132,13 @@ const App: React.FC<{}> = () => {
     }
   };
 
-  const onStartNodeDrag = async (e: LeafletMouseEvent) => {
-    const closest = findClosestNode(e.latlng);
+  const onStartNodeDrag = async (e: LeafletMouseEvent) => {};
+
+  const onEndNodeDrag = async (e: LeafletMouseEvent) => {};
+
+  // on finish drag, set position to nearest
+  const onStartNodeDragEnd = (e: any) => {
+    const closest = findClosestNode(e.target._latlng);
     if (startNodeMarker && startNodeMarker.current) {
       const latlng = startNodeMarker.current.leafletElement.getLatLng();
       setStartMarkerPos(new LatLng(latlng.lat, latlng.lng));
@@ -141,29 +146,19 @@ const App: React.FC<{}> = () => {
     if (closest) {
       setStartNode(closest.key);
     }
+    // if (pathFound) {
+    //   runPathfinding(0, true);
+    // }
   };
 
-  const onEndNodeDrag = async (e: LeafletMouseEvent) => {
-    const closest = findClosestNode(e.latlng);
+  const onEndNodeDragEnd = (e: any) => {
+    const closest = findClosestNode(e.target._latlng);
     if (endNodeMarker && endNodeMarker.current) {
       const latlng = endNodeMarker.current.leafletElement.getLatLng();
       setEndMarkerPos(new LatLng(latlng.lat, latlng.lng));
     }
     if (closest) {
       setEndNode(closest.key);
-    }
-  };
-
-  // on finish drag, set position to nearest
-  const onStartNodeDragEnd = () => {
-    if (pathFound) {
-      runPathfinding(0, true);
-    }
-  };
-
-  const onEndNodeDragEnd = () => {
-    if (pathFound) {
-      runPathfinding(0, true);
     }
   };
 
@@ -187,6 +182,9 @@ const App: React.FC<{}> = () => {
 
   useEffect(() => {
     // on start, end node change, redo pathfinding
+    if (pathFound) {
+      runPathfinding(0, true);
+    }
   }, [startNode, endNode]);
 
   const renderMarkers = () => {
