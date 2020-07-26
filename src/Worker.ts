@@ -22,14 +22,16 @@ ctx.addEventListener("message", async (event) => {
   const addNodesHandler = (nodes: Set<string>) => {
     ctx.postMessage(JSON.stringify({ type: "updateNodes", nodes: [...nodes] }));
   };
-  const path = await findPath(
+  const [path, timeTaken] = await findPath(
     algorithm,
     startNode,
     endNode,
     delayInMs,
     addNodesHandler
   );
-  ctx.postMessage(JSON.stringify({ type: "setPath", path: path }));
+  ctx.postMessage(
+    JSON.stringify({ type: "setPath", path: path, timeTaken: timeTaken })
+  );
 });
 
 const findPath = async (
@@ -42,7 +44,7 @@ const findPath = async (
   if (startNode && endNode && algorithm) {
     if (hasKey(algorithmDict, algorithm)) {
       const selectedAlgorithm: Function = algorithmDict[algorithm];
-      const shortestPath = await selectedAlgorithm(
+      const [shortestPath, timeTaken] = await selectedAlgorithm(
         startNode,
         endNode,
         delayInMs,
@@ -59,7 +61,7 @@ const findPath = async (
           path.push({ lat: node.lat, lng: node.lon });
         }
       }
-      return path;
+      return [path, timeTaken];
     }
   }
 };

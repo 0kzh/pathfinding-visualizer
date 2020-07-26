@@ -39,3 +39,15 @@ export const Button = styled.button`
 export const IconWrapper = styled.div`
   margin-left: 10px;
 `;
+
+export const Label = styled.p`
+  font-size: 14px;
+  font-weight: bold;
+  // text-transform: uppercase;
+  margin-block-start: 0;
+  margin-block-end: 5px;
+`;
+
+export const StatContainer = styled.div`
+  margin-top: 10px;
+`;

@@ -2,6 +2,7 @@ import Deque from "double-ended-queue";
 import nodeData from "../data/sanfran.json";
 import { nodeInfo } from "../types";
 import { hasKey } from "../utils";
+import Timer from "timer-machine";
 
 interface previousDict {
   [key: string]: string | null;
@@ -21,6 +22,7 @@ const bfs = async (
 ) => {
   // we use nulls to keep track of the current level
   let queue: Deque<string | null> = new Deque();
+  let path: Array<string> = [];
   let previous: previousDict = {};
   let discovered: Set<string> = new Set<string>();
   let rendered: Set<string> = new Set<string>();
@@ -35,6 +37,8 @@ const bfs = async (
 
   queue.push(start);
   queue.push(null);
+  const timer = new Timer();
+  timer.start();
   while (queue.length > 0) {
     const prev: string | null | undefined = queue.shift();
 
@@ -45,7 +49,9 @@ const bfs = async (
       total = 0;
       if (delay > 0) {
         cb(nextRender);
+        timer.stop();
         await sleep(delay);
+        timer.start();
         nextRender = new Set<string>();
       }
       queue.push(null);
@@ -63,7 +69,6 @@ const bfs = async (
     }
 
     if (node == end) {
-      let path = [];
       cb(nextRender);
       while (previous[node]) {
         path.push(node);
@@ -72,7 +77,7 @@ const bfs = async (
           node = prev;
         }
       }
-      return path.reverse();
+      break;
     }
 
     if (hasKey(nodeData, node)) {
@@ -88,7 +93,7 @@ const bfs = async (
       });
     }
   }
-  return [];
+  return [path.reverse(), timer.time()];
 };
 
 export default bfs;

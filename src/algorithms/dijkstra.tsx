@@ -2,6 +2,7 @@ import TinyQueue from "tinyqueue";
 import nodeData from "../data/sanfran.json";
 import { nodeInfo } from "../types";
 import { hasKey } from "../utils";
+import Timer from "timer-machine";
 
 interface distanceDict {
   [key: string]: number;
@@ -54,6 +55,8 @@ const dijkstra = async (
     queue.push({ key: node, distance: distances[node] });
   });
 
+  const timer = new Timer();
+  timer.start();
   while (queue.length > 0) {
     let temp = queue.pop();
     let smallest: string = temp.key;
@@ -61,7 +64,9 @@ const dijkstra = async (
     if (smallest === "_") {
       if (delay > 0 && nextRender.size > 0) {
         cb(nextRender);
+        timer.stop();
         await sleep(delay);
+        timer.start();
         nextRender.clear();
         rendered.clear();
       }
@@ -76,6 +81,7 @@ const dijkstra = async (
     }
 
     if (smallest == end) {
+      console.log(timer.time());
       cb(nextRender);
       while (previous[smallest]) {
         path.push(smallest);
@@ -109,7 +115,7 @@ const dijkstra = async (
     }
   }
   // concat start because previous[start] won't exist
-  return path.concat(start).reverse();
+  return [path.concat(start).reverse(), timer.time()];
 };
 
 export default dijkstra;

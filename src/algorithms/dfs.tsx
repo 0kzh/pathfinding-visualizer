@@ -1,6 +1,7 @@
 import nodeData from "../data/sanfran.json";
 import { nodeInfo } from "../types";
 import { hasKey } from "../utils";
+import Timer from "timer-machine";
 
 interface previousDict {
   [key: string]: Array<string>;
@@ -28,16 +29,18 @@ const dfs = async (
 ) => {
   let stack: [string, Array<string>][] = [];
   let visitedNodes = new Set<string>();
-
+  let path: Array<string> = [];
   let total: number = 0;
   let nextRender: Set<string> = new Set<string>();
 
   stack.push([start, [start]]);
+  const timer = new Timer();
+  timer.start();
   while (stack.length > 0) {
     const popped: [string, Array<string>] | undefined = stack.pop();
     if (!popped) return;
     let node = popped[0];
-    const path = popped[1];
+    path = popped[1];
 
     if (total % 50 === 0) {
       nextRender.add(node);
@@ -48,13 +51,15 @@ const dfs = async (
     if (total % nodesPerRender === 0) {
       if (delay > 0) {
         cb(nextRender);
+        timer.stop();
         await sleep(delay);
+        timer.start();
       }
       nextRender = new Set<string>();
     }
 
     if (node === end) {
-      return path.reverse();
+      break;
     }
     if (!visitedNodes.has(node)) {
       visitedNodes.add(node);
@@ -68,7 +73,7 @@ const dfs = async (
       }
     }
   }
-  return false;
+  return [path.reverse(), timer.time()];
 };
 
 export default dfs;

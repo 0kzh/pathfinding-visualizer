@@ -22,6 +22,8 @@ import {
   Select,
   Button,
   IconWrapper,
+  Label,
+  StatContainer,
 } from "./components/Styles";
 import PathfindingMarkers from "./components/PathfindingMarkers";
 import { hasKey } from "./utils";
@@ -60,6 +62,7 @@ const App: React.FC<{}> = () => {
   // console.log(numEdges / 2);
   // console.log(Object.keys(nodeData).length);
   const [worker, setWorker] = useState(() => new Worker());
+  const [timeTaken, setTimeTaken] = useState<number>(-1);
 
   // start and end markers
   const [startNode, setStartNode] = useState<string | null>("258968250");
@@ -99,8 +102,10 @@ const App: React.FC<{}> = () => {
         }
       } else if (type === "setPath") {
         const path = data.path;
+        const timeTaken = data.timeTaken;
         if (path) {
           setPathFound(true);
+          setTimeTaken(data.timeTaken);
           pathfindingComplete(path);
         }
       }
@@ -217,15 +222,44 @@ const App: React.FC<{}> = () => {
     // clearNodes();
   };
 
+  const TimeTaken = () => {
+    let timeTakenText;
+    let pathLengthText;
+    if (timeTaken >= 0) {
+      if (pathFound) {
+        timeTakenText = `Path found in ${timeTaken / 1000.0} seconds`;
+        pathLengthText =
+          path.length > 0 ? `Path length: ${path.length} nodes` : null;
+      } else {
+        timeTakenText = "Finding path...";
+      }
+    }
+    return (
+      <StatContainer>
+        <Label>{timeTakenText}</Label>
+        <Label>{pathLengthText}</Label>
+      </StatContainer>
+    );
+  };
+
   return (
     <div className="App">
       <Settings>
         <Child style={{ justifyContent: "flex-start" }}>
-          <Select onChange={(e) => setAlgorithm(e.target.value)}>
-            {algos.map((algo) => (
-              <option value={algo.value}>{algo.label}</option>
-            ))}
-          </Select>
+          <div
+            style={{
+              position: "absolute",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Select onChange={(e) => setAlgorithm(e.target.value)}>
+              {algos.map((algo) => (
+                <option value={algo.value}>{algo.label}</option>
+              ))}
+            </Select>
+            <TimeTaken />
+          </div>
         </Child>
         <Child style={{ justifyContent: "center" }}>
           <Select onChange={(e) => setCity(e.target.value)}>
