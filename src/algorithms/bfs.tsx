@@ -40,6 +40,9 @@ const bfs = async (
 
     if (prev === null) {
       level++;
+      // console.log(`level ${level}: ${total}`);
+      // console.log(`rendering: ${nextRender.size}`);
+      total = 0;
       if (delay > 0) {
         cb(nextRender);
         await sleep(delay);
@@ -54,7 +57,7 @@ const bfs = async (
     let node = prev;
     total++;
 
-    if (total % (level ^ 2) == 0 && !rendered.has(node)) {
+    if (total % (100 / total) === 0 && !rendered.has(node)) {
       nextRender.add(node);
       rendered.add(node);
     }
