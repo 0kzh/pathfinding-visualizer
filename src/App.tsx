@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import ReactDOM from "react-dom";
 import { LeafletEvent, LeafletMouseEvent, Icon, LatLng } from "leaflet";
 import {
@@ -11,7 +11,6 @@ import {
 } from "react-leaflet";
 
 import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPolyline";
-import CanvasMarkersLayer from "./lib/react-leaflet-canvas-markers/CanvasMarkersLayer";
 
 // eslint-disable-next-line
 import Worker from "worker-loader!./Worker";
@@ -21,8 +20,9 @@ import nodeData from "./data/sanfran.json";
 import cities from "./data/locations.json";
 import findPath from "./pathfinding";
 import Settings from "./components/Settings";
+import PathfindingMarkers from "./components/PathfindingMarkers";
+
 import { nodeInfo, qtNode, pair } from "./types";
-import { hasKey } from "./utils";
 import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
 
@@ -260,31 +260,7 @@ const App: React.FC<{}> = () => {
 
         <ZoomControl position={"bottomleft"} />
 
-        <CanvasMarkersLayer>
-          {/* This renders nodes for the current iteration */}
-          {Array.from(prevNodes).map((node: string) => {
-            if (hasKey(nodeData, node)) {
-              const val: nodeInfo = nodeData[node];
-              if (nodes.has(node)) {
-                return (
-                  <Marker
-                    key={node}
-                    position={[val.lat, val.lon]}
-                    icon={nodeMarker}
-                  />
-                );
-              } else {
-                return (
-                  <Marker
-                    key={node}
-                    position={[val.lat, val.lon]}
-                    icon={visitedNodeMarker}
-                  />
-                );
-              }
-            }
-          })}
-        </CanvasMarkersLayer>
+        <PathfindingMarkers nodes={nodes} prevNodes={prevNodes} />
 
         {/* Render start/end markers */}
         {renderMarkers()}
