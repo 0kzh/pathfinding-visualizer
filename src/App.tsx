@@ -139,12 +139,9 @@ const App: React.FC<{}> = () => {
   // on finish drag, set position to nearest
   const onStartNodeDragEnd = (e: any) => {
     const closest = findClosestNode(e.target._latlng);
-    if (startNodeMarker && startNodeMarker.current) {
-      const latlng = startNodeMarker.current.leafletElement.getLatLng();
-      setStartMarkerPos(new LatLng(latlng.lat, latlng.lng));
-    }
     if (closest) {
       setStartNode(closest.key);
+      setStartMarkerPos(new LatLng(closest.lat, closest.lon));
     }
     // if (pathFound) {
     //   runPathfinding(0, true);
@@ -153,12 +150,9 @@ const App: React.FC<{}> = () => {
 
   const onEndNodeDragEnd = (e: any) => {
     const closest = findClosestNode(e.target._latlng);
-    if (endNodeMarker && endNodeMarker.current) {
-      const latlng = endNodeMarker.current.leafletElement.getLatLng();
-      setEndMarkerPos(new LatLng(latlng.lat, latlng.lng));
-    }
     if (closest) {
       setEndNode(closest.key);
+      setEndMarkerPos(new LatLng(closest.lat, closest.lon));
     }
   };
 
@@ -186,38 +180,6 @@ const App: React.FC<{}> = () => {
       runPathfinding(0, true);
     }
   }, [startNode, endNode]);
-
-  const renderMarkers = () => {
-    let markers = [];
-    if (startMarkerPos) {
-      markers.push(
-        <Marker
-          ref={startNodeMarker}
-          position={[startMarkerPos.lat, startMarkerPos.lng]}
-          icon={marker}
-          draggable
-          ondrag={onStartNodeDrag}
-          ondragend={onStartNodeDragEnd}
-        />
-      );
-    }
-    if (endMarkerPos) {
-      markers.push(
-        <Marker
-          ref={endNodeMarker}
-          position={[endMarkerPos.lat, endMarkerPos.lng]}
-          icon={marker}
-          draggable
-          ondragstart={() => {
-            setPath([]);
-          }}
-          ondrag={onEndNodeDrag}
-          ondragend={onEndNodeDragEnd}
-        />
-      );
-    }
-    return markers;
-  };
 
   const addNodes = (nodesToRender: Set<string>) => {
     setNodes(nodesToRender);
@@ -261,7 +223,30 @@ const App: React.FC<{}> = () => {
         <PathfindingMarkers nodes={nodes} prevNodes={prevNodes} />
 
         {/* Render start/end markers */}
-        {renderMarkers()}
+        {startMarkerPos && (
+          <Marker
+            ref={startNodeMarker}
+            position={[startMarkerPos.lat, startMarkerPos.lng]}
+            icon={marker}
+            draggable
+            ondrag={onStartNodeDrag}
+            ondragend={onStartNodeDragEnd}
+          />
+        )}
+
+        {endMarkerPos && (
+          <Marker
+            ref={endNodeMarker}
+            position={[endMarkerPos.lat, endMarkerPos.lng]}
+            icon={marker}
+            draggable
+            ondragstart={() => {
+              setPath([]);
+            }}
+            ondrag={onEndNodeDrag}
+            ondragend={onEndNodeDragEnd}
+          />
+        )}
 
         {/* Render final path, if exists */}
         {pathFound && path.length > 0 && (
