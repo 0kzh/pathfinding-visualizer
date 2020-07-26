@@ -3,9 +3,9 @@ import styled from "styled-components";
 export const Settings = styled.div`
   position: absolute;
   top: 20px;
-  width: 100%;
-  margin-left: 20px;
-  margin-right: 20px;
+  width: calc(100% - 40px);
+  padding-left: 20px;
+  padding-right: 20px;
   display: flex;
   z-index: 9999;
 `;
@@ -13,7 +13,6 @@ export const Settings = styled.div`
 export const Child = styled.div`
   flex: 1;
   display: flex;
-  align-items: center;
 `;
 
 export const Select = styled.select`
@@ -35,4 +34,8 @@ export const Button = styled.button`
   font-size: 16px;
   font-weight: bold;
   outline: none;
+`;
+
+export const IconWrapper = styled.div`
+  margin-left: 10px;
 `;

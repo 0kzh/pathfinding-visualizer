@@ -16,13 +16,19 @@ import Worker from "worker-loader!./Worker";
 import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
 // import Settings from "./components/Settings";
-import { Settings, Child, Select, Button } from "./components/Styles";
+import {
+  Settings,
+  Child,
+  Select,
+  Button,
+  IconWrapper,
+} from "./components/Styles";
 import PathfindingMarkers from "./components/PathfindingMarkers";
 import { hasKey } from "./utils";
 import { nodeInfo, qtNode, pair } from "./types";
 import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
-import styled from "styled-components";
+import { MarkGithubIcon, InfoIcon } from "@primer/octicons-react";
 
 import "./App.css";
 
@@ -214,14 +220,14 @@ const App: React.FC<{}> = () => {
   return (
     <div className="App">
       <Settings>
-        <Child>
+        <Child style={{ justifyContent: "flex-start" }}>
           <Select onChange={(e) => setAlgorithm(e.target.value)}>
             {algos.map((algo) => (
               <option value={algo.value}>{algo.label}</option>
             ))}
           </Select>
         </Child>
-        <Child>
+        <Child style={{ justifyContent: "center" }}>
           <Select onChange={(e) => setCity(e.target.value)}>
             {cities.map((city) => (
               <option value={city.value}>{city.label}</option>
@@ -234,7 +240,14 @@ const App: React.FC<{}> = () => {
             Visualize
           </Button>
         </Child>
-        <Child></Child>
+        <Child style={{ justifyContent: "flex-end" }}>
+          <IconWrapper>
+            <InfoIcon size={24} />
+          </IconWrapper>
+          <IconWrapper>
+            <MarkGithubIcon size={24} />
+          </IconWrapper>
+        </Child>
       </Settings>
 
       {/* <Stats city={city} /> */}
