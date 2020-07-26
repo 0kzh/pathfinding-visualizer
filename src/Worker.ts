@@ -7,7 +7,7 @@ import { hasKey } from "./utils";
 import { ValueType } from "react-select/src/types";
 
 const algorithmDict = {
-  dijkstas: dijkstra,
+  dijkstras: dijkstra,
   astar: dijkstra,
   greedy: dijkstra,
   bfs: bfs,
@@ -33,16 +33,15 @@ ctx.addEventListener("message", async (event) => {
 });
 
 const findPath = async (
-  algorithm: ValueType<pair>,
+  algorithm: string,
   startNode: string,
   endNode: string,
   delayInMs: number,
   addNodesHandler: (node: Set<string>) => void
 ) => {
   if (startNode && endNode && algorithm) {
-    const algoName = (algorithm as pair).value;
-    if (hasKey(algorithmDict, algoName)) {
-      const selectedAlgorithm: Function = algorithmDict[algoName];
+    if (hasKey(algorithmDict, algorithm)) {
+      const selectedAlgorithm: Function = algorithmDict[algorithm];
       const shortestPath = await selectedAlgorithm(
         startNode,
         endNode,

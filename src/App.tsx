@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import ReactDOM from "react-dom";
 import { LeafletEvent, LeafletMouseEvent, Icon, LatLng } from "leaflet";
 import {
   Map,
@@ -9,7 +8,6 @@ import {
   TileLayer,
   ZoomControl,
 } from "react-leaflet";
-
 import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPolyline";
 
 // eslint-disable-next-line
@@ -17,22 +15,44 @@ import Worker from "worker-loader!./Worker";
 
 import { ValueType } from "react-select/src/types";
 import nodeData from "./data/sanfran.json";
-import cities from "./data/locations.json";
-import findPath from "./pathfinding";
-import Settings from "./components/Settings";
+// import Settings from "./components/Settings";
+import { Settings, Child, Select, Button } from "./components/Styles";
 import PathfindingMarkers from "./components/PathfindingMarkers";
-
+import { hasKey } from "./utils";
 import { nodeInfo, qtNode, pair } from "./types";
 import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
+import styled from "styled-components";
 
 import "./App.css";
+
+const cities: Array<pair> = [
+  { value: "san_francisco", label: "San Francisco (37K nodes, 3.9 MB)" },
+  { value: "new_york", label: "New York" },
+  { value: "vancouver", label: "Vancouver" },
+  { value: "waterloo", label: "Waterloo" },
+];
+
+const algos: Array<pair> = [
+  { value: "dijkstras", label: "Dijkstra's Algorithm" },
+  { value: "astar", label: "A* Search" },
+  { value: "greedy", label: "Best First Search" },
+  { value: "bfs", label: "Breadth First Search" },
+  { value: "dfs", label: "Depth First Search" },
+];
 
 const App: React.FC<{}> = () => {
   const [lng, setLng] = useState(-122.4372);
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
-
+  // let numEdges = 0;
+  // Object.keys(nodeData).map((key) => {
+  //   if (hasKey(nodeData, key)) {
+  //     numEdges += nodeData[key].adj.length;
+  //   }
+  // });
+  // console.log(numEdges / 2);
+  // console.log(Object.keys(nodeData).length);
   const [worker, setWorker] = useState(() => new Worker());
 
   // start and end markers
@@ -43,16 +63,15 @@ const App: React.FC<{}> = () => {
 
   // pathfinding state
   const [nodes, setNodes] = useState<Set<string>>(new Set<string>());
-  const [prevNodes, setPrevNodes] = useState<Set<string>>(new Set<string>());
   const [pathFound, setPathFound] = useState<boolean>(false);
 
   // final pathfinding path
   const [path, setPath] = useState<Array<LatLng>>(new Array<LatLng>());
 
-  const [algorithm, setAlgorithm] = useState<ValueType<pair>>({
-    value: "dijkstas",
-    label: "Dijkstra's Algorithm",
-  });
+  // configuration options
+  const [algorithm, setAlgorithm] = useState<string>("dijkstras");
+
+  const [city, setCity] = useState<string>("san_francisco");
 
   const [startMarkerPos, setStartMarkerPos] = useState<LatLng>(
     new LatLng(37.75197982788086, -122.42283630371094)
@@ -157,10 +176,8 @@ const App: React.FC<{}> = () => {
   };
 
   const runPathfinding = async (delayInMs: number, shouldReset: boolean) => {
-    console.log("called!!!");
     if (shouldReset) {
       setNodes(new Set<string>());
-      setPrevNodes(new Set<string>());
     }
     if (startNode !== null && endNode !== null) {
       worker.postMessage(
@@ -182,8 +199,7 @@ const App: React.FC<{}> = () => {
   }, [startNode, endNode]);
 
   const addNodes = (nodesToRender: Set<string>) => {
-    setNodes(nodesToRender);
-    setPrevNodes((oldNodes) => new Set([...oldNodes, ...nodesToRender]));
+    setNodes((oldNodes) => new Set([...oldNodes, ...nodesToRender]));
   };
 
   const clearNodes = () => {
@@ -197,15 +213,31 @@ const App: React.FC<{}> = () => {
 
   return (
     <div className="App">
-      <Settings
-        startNode={startNode}
-        endNode={endNode}
-        runPathfindingHandler={() => {
-          runPathfinding(100, true);
-        }}
-        algorithm={algorithm}
-        setAlgorithm={setAlgorithm}
-      />
+      <Settings>
+        <Child>
+          <Select onChange={(e) => setAlgorithm(e.target.value)}>
+            {algos.map((algo) => (
+              <option value={algo.value}>{algo.label}</option>
+            ))}
+          </Select>
+        </Child>
+        <Child>
+          <Select onChange={(e) => setCity(e.target.value)}>
+            {cities.map((city) => (
+              <option value={city.value}>{city.label}</option>
+            ))}
+          </Select>
+          <Button
+            disabled={!startNode || !endNode}
+            onClick={() => runPathfinding(100, true)}
+          >
+            Visualize
+          </Button>
+        </Child>
+        <Child></Child>
+      </Settings>
+
+      {/* <Stats city={city} /> */}
       <Map
         preferCanvas
         center={[lat, lng]}
@@ -220,7 +252,7 @@ const App: React.FC<{}> = () => {
 
         <ZoomControl position={"bottomleft"} />
 
-        <PathfindingMarkers nodes={nodes} prevNodes={prevNodes} />
+        <PathfindingMarkers nodes={nodes} />
 
         {/* Render start/end markers */}
         {startMarkerPos && (
