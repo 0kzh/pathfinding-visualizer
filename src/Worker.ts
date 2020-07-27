@@ -1,5 +1,6 @@
 import nodeData from "./data/sanfran.json";
 import dijkstra from "./algorithms/dijkstra";
+import astar from "./algorithms/astar";
 import bfs from "./algorithms/bfs";
 import dfs from "./algorithms/dfs";
 import { nodeInfo, pair, LeafletLatLng } from "./types";
@@ -8,7 +9,7 @@ import { ValueType } from "react-select/src/types";
 
 const algorithmDict = {
   dijkstras: dijkstra,
-  astar: dijkstra,
+  astar: astar,
   greedy: dijkstra,
   bfs: bfs,
   dfs: dfs,
