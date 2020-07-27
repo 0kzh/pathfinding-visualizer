@@ -115,7 +115,7 @@ const astar = async (
     if (nextRender.size % 10 === 0) {
       cb(nextRender);
       timer.stop();
-      await sleep(100);
+      await sleep(delay);
       timer.start();
       nextRender = new Set<string>();
     }

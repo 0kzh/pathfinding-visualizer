@@ -3,6 +3,7 @@ import dijkstra from "./algorithms/dijkstra";
 import astar from "./algorithms/astar";
 import bfs from "./algorithms/bfs";
 import dfs from "./algorithms/dfs";
+import greedy from "./algorithms/greedy";
 import { nodeInfo, pair, LeafletLatLng } from "./types";
 import { hasKey } from "./utils";
 import { ValueType } from "react-select/src/types";
@@ -10,7 +11,7 @@ import { ValueType } from "react-select/src/types";
 const algorithmDict = {
   dijkstras: dijkstra,
   astar: astar,
-  greedy: dijkstra,
+  greedy: greedy,
   bfs: bfs,
   dfs: dfs,
 };
