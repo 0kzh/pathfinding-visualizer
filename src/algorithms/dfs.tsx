@@ -1,4 +1,4 @@
-import nodeData from "../data/sanfran.json";
+import { getCityData } from "../constants";
 import { nodeInfo } from "../types";
 import { hasKey } from "../utils";
 import Timer from "timer-machine";
@@ -22,11 +22,13 @@ function sleep(ms: number) {
 // find shortest path from start to end using bfs's
 // cb is called when a new node is visited
 const dfs = async (
+  city: string,
   start: string,
   end: string,
   delay: number,
   cb: (toRender: Set<string>) => void
 ) => {
+  const nodeData = getCityData(city);
   let stack: [string, Array<string>][] = [];
   let visitedNodes = new Set<string>();
   let path: Array<string> = [];

@@ -1,24 +1,9 @@
 import TinyQueue from "tinyqueue";
 import BinaryHeap from "../structures/BinaryHeap";
-import nodeData from "../data/sanfran.json";
+import { getCityData } from "../constants";
 import { nodeInfo } from "../types";
 import { hasKey } from "../utils";
 import Timer from "timer-machine";
-
-const manhattan = function (nodeA: string, nodeB: string) {
-  if (hasKey(nodeData, nodeA) && hasKey(nodeData, nodeB)) {
-    const posA = nodeData[nodeA];
-    const posB = nodeData[nodeB];
-
-    var d1 = Math.abs(posB.lat - posA.lat);
-    var d2 = Math.abs(posB.lon - posA.lon);
-
-    const dist = Math.sqrt(d1 * d1 + d2 * d2);
-    // console.log(dist);
-    return dist;
-  }
-  return -1;
-};
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -43,10 +28,6 @@ class Node {
     this.ref = nodeId;
     this.neighbors = neighbors;
     this.parent = null;
-  }
-
-  getCost(fromNode: Node) {
-    return 1;
   }
 }
 
@@ -74,11 +55,29 @@ function getHeap() {
 }
 
 const astar = async (
+  city: string,
   start: string,
   end: string,
   delay: number,
   cb: (toRender: Set<string>) => void
 ) => {
+  const nodeData = getCityData(city);
+
+  const getDistance = function (nodeA: string, nodeB: string) {
+    if (hasKey(nodeData, nodeA) && hasKey(nodeData, nodeB)) {
+      const posA = nodeData[nodeA];
+      const posB = nodeData[nodeB];
+
+      var d1 = Math.abs(posB.lat - posA.lat);
+      var d2 = Math.abs(posB.lon - posA.lon);
+
+      const dist = Math.sqrt(d1 * d1 + d2 * d2);
+      // console.log(dist);
+      return dist;
+    }
+    return -1;
+  };
+
   let openHeap = getHeap();
 
   let total: number = 0;
@@ -134,13 +133,13 @@ const astar = async (
 
         // g score is shortest distance from start to current node
         // need to check if path we arrat at is the shortest we've seen
-        const gScore = currentNode.g + manhattan(currentNode, neighbor);
+        const gScore = currentNode.g + getDistance(currentNode, neighbor);
         const visited = neighborNode.visited;
 
         if (!visited || gScore < neighborNode.g) {
           neighborNode.visited = true;
           neighborNode.parent = currentNode;
-          neighborNode.h = neighborNode.h || manhattan(neighbor, end);
+          neighborNode.h = neighborNode.h || getDistance(neighbor, end);
           neighborNode.g = gScore;
           neighborNode.f = neighborNode.h + neighborNode.g;
 

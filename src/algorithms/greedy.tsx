@@ -1,5 +1,5 @@
 import TinyQueue from "tinyqueue";
-import nodeData from "../data/sanfran.json";
+import { getCityData } from "../constants";
 import { nodeInfo } from "../types";
 import { hasKey } from "../utils";
 import Timer from "timer-machine";
@@ -21,29 +21,32 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const distanceBetween = function (nodeA: string, nodeB: string) {
-  if (hasKey(nodeData, nodeA) && hasKey(nodeData, nodeB)) {
-    const posA = nodeData[nodeA];
-    const posB = nodeData[nodeB];
-
-    var d1 = Math.abs(posB.lat - posA.lat);
-    var d2 = Math.abs(posB.lon - posA.lon);
-
-    const dist = Math.sqrt(d1 * d1 + d2 * d2);
-    // console.log(dist);
-    return dist;
-  }
-  return -1;
-};
-
 // find shortest path from start to end using dijkstra's
 // cb is called when a new node is visited
 const greedy = async (
+  city: string,
   start: string,
   end: string,
   delay: number,
   cb: (toRender: Set<string>) => void
 ) => {
+  const nodeData = getCityData(city);
+
+  const getDistance = function (nodeA: string, nodeB: string) {
+    if (hasKey(nodeData, nodeA) && hasKey(nodeData, nodeB)) {
+      const posA = nodeData[nodeA];
+      const posB = nodeData[nodeB];
+
+      var d1 = Math.abs(posB.lat - posA.lat);
+      var d2 = Math.abs(posB.lon - posA.lon);
+
+      const dist = Math.sqrt(d1 * d1 + d2 * d2);
+      // console.log(dist);
+      return dist;
+    }
+    return -1;
+  };
+
   let queue = new TinyQueue([], (a: heapObj, b: heapObj) => {
     return a.distance - b.distance;
   });
@@ -109,7 +112,7 @@ const greedy = async (
 
       let maxDist = 0;
       neighbors.forEach((neighbor) => {
-        let alt = distanceBetween(end, neighbor); // unweighted
+        let alt = getDistance(end, neighbor); // unweighted
         maxDist = Math.max(maxDist, alt);
         if (alt < distances[neighbor]) {
           distances[neighbor] = alt;

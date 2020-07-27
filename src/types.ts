@@ -19,3 +19,11 @@ export interface pair {
   label: string;
   value: string;
 }
+
+export interface dataDict {
+  [key: string]: nodeInfo;
+}
+
+export interface cityDict {
+  [key: string]: dataDict;
+}

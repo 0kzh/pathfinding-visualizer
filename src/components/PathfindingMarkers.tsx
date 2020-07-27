@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import nodeData from "../data/sanfran.json";
+import { getCityData } from "../constants";
 import { hasKey } from "../utils";
 import { Marker } from "react-leaflet";
 import { marker, nodeMarker, visitedNodeMarker } from "../Icons";
@@ -7,10 +7,12 @@ import { nodeInfo, qtNode, pair } from "../types";
 import CanvasMarkersLayer from "../lib/react-leaflet-canvas-markers/CanvasMarkersLayer";
 
 interface Props {
+  city: string;
   nodes: Set<string>;
 }
 
-const PathfindingMarkers: React.FC<Props> = ({ nodes }) => {
+const PathfindingMarkers: React.FC<Props> = ({ city, nodes }) => {
+  const nodeData = getCityData(city);
   return (
     <CanvasMarkersLayer>
       {Array.from(nodes).map((node: string) => {

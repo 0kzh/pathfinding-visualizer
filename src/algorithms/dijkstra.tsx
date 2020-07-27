@@ -1,5 +1,5 @@
 import TinyQueue from "tinyqueue";
-import nodeData from "../data/sanfran.json";
+import { getCityData } from "../constants";
 import { nodeInfo } from "../types";
 import { hasKey } from "../utils";
 import Timer from "timer-machine";
@@ -24,11 +24,14 @@ function sleep(ms: number) {
 // find shortest path from start to end using dijkstra's
 // cb is called when a new node is visited
 const dijkstra = async (
+  city: string,
   start: string,
   end: string,
   delay: number,
   cb: (toRender: Set<string>) => void
 ) => {
+  console.log(city);
+  const nodeData = getCityData(city);
   let queue = new TinyQueue([], (a: heapObj, b: heapObj) => {
     return a.distance - b.distance;
   });

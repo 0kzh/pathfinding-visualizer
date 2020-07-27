@@ -14,7 +14,6 @@ import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPoly
 import Worker from "worker-loader!./Worker";
 
 import { ValueType } from "react-select/src/types";
-import nodeData from "./data/sanfran.json";
 // import Settings from "./components/Settings";
 import {
   Settings,
@@ -27,27 +26,12 @@ import {
 } from "./components/Styles";
 import PathfindingMarkers from "./components/PathfindingMarkers";
 import { hasKey } from "./utils";
-import { nodeInfo, qtNode, pair } from "./types";
+import { nodeInfo, qtNode, pair, dataDict } from "./types";
 import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
 import { MarkGithubIcon, InfoIcon } from "@primer/octicons-react";
-
+import { cities, algos, cityLocs, cityData, getCityData } from "./constants";
 import "./App.css";
-
-const cities: Array<pair> = [
-  { value: "san_francisco", label: "San Francisco (37K nodes, 3.9 MB)" },
-  { value: "new_york", label: "New York" },
-  { value: "vancouver", label: "Vancouver" },
-  { value: "waterloo", label: "Waterloo" },
-];
-
-const algos: Array<pair> = [
-  { value: "dijkstras", label: "Dijkstra's Algorithm" },
-  { value: "astar", label: "A* Search" },
-  { value: "greedy", label: "Best First Search" },
-  { value: "bfs", label: "Breadth First Search" },
-  { value: "dfs", label: "Depth First Search" },
-];
 
 const App: React.FC<{}> = () => {
   const [lng, setLng] = useState(-122.4372);
@@ -65,8 +49,8 @@ const App: React.FC<{}> = () => {
   const [timeTaken, setTimeTaken] = useState<number>(-1);
 
   // start and end markers
-  const [startNode, setStartNode] = useState<string | null>("258968250");
-  const [endNode, setEndNode] = useState<string | null>("65296327");
+  const [startNode, setStartNode] = useState<string | null>(null);
+  const [endNode, setEndNode] = useState<string | null>(null);
   const startNodeMarker = useRef<Marker>(null);
   const endNodeMarker = useRef<Marker>(null);
 
@@ -82,14 +66,22 @@ const App: React.FC<{}> = () => {
 
   const [city, setCity] = useState<string>("san_francisco");
 
-  const [startMarkerPos, setStartMarkerPos] = useState<LatLng>(
-    new LatLng(37.75197982788086, -122.42283630371094)
-  );
-  const [endMarkerPos, setEndMarkerPos] = useState<LatLng>(
-    new LatLng(37.76089096069336, -122.43502807617188)
-  );
+  const [startMarkerPos, setStartMarkerPos] = useState<LatLng | null>(null);
+  const [endMarkerPos, setEndMarkerPos] = useState<LatLng | null>(null);
 
   const [qt, setQt] = useState<d3.Quadtree<qtNode>>(d3.quadtree<qtNode>());
+  const [nodeData, setNodeData] = useState<dataDict>({});
+
+  useEffect(() => {
+    if (city) {
+      if (hasKey(cityLocs, city)) {
+        setLat(cityLocs[city].lat);
+        setLng(cityLocs[city].lng);
+      }
+
+      setNodeData(getCityData(city));
+    }
+  }, [city]);
 
   useEffect(() => {
     worker.onmessage = (event: any) => {
@@ -120,7 +112,6 @@ const App: React.FC<{}> = () => {
     // don't include children/adj since we can always do O(1) lookup from nodeData
     // original: { x, y }
     // new: { nodeId, x, y }
-
     const transformed = [];
     for (let [key, value] of Object.entries(nodeData)) {
       transformed.push({ key: key, lat: value.lat, lon: value.lon });
@@ -193,6 +184,7 @@ const App: React.FC<{}> = () => {
     if (startNode !== null && endNode !== null) {
       worker.postMessage(
         JSON.stringify({
+          city: city,
           algorithm: algorithm,
           startNode: startNode,
           endNode: endNode,
@@ -299,7 +291,7 @@ const App: React.FC<{}> = () => {
 
         <ZoomControl position={"bottomleft"} />
 
-        <PathfindingMarkers nodes={nodes} />
+        <PathfindingMarkers city={city} nodes={nodes} />
 
         {/* Render start/end markers */}
         {startMarkerPos && (

@@ -1,4 +1,5 @@
-import nodeData from "./data/sanfran.json";
+import { getCityData } from "./constants";
+
 import dijkstra from "./algorithms/dijkstra";
 import astar from "./algorithms/astar";
 import bfs from "./algorithms/bfs";
@@ -20,11 +21,14 @@ const ctx: Worker = self as any;
 
 // Respond to message from parent thread
 ctx.addEventListener("message", async (event) => {
-  const { algorithm, startNode, endNode, delayInMs } = JSON.parse(event.data);
+  const { city, algorithm, startNode, endNode, delayInMs } = JSON.parse(
+    event.data
+  );
   const addNodesHandler = (nodes: Set<string>) => {
     ctx.postMessage(JSON.stringify({ type: "updateNodes", nodes: [...nodes] }));
   };
   const [path, timeTaken] = await findPath(
+    city,
     algorithm,
     startNode,
     endNode,
@@ -37,16 +41,19 @@ ctx.addEventListener("message", async (event) => {
 });
 
 const findPath = async (
+  city: string,
   algorithm: string,
   startNode: string,
   endNode: string,
   delayInMs: number,
   addNodesHandler: (node: Set<string>) => void
 ) => {
+  const nodeData = getCityData(city);
   if (startNode && endNode && algorithm) {
     if (hasKey(algorithmDict, algorithm)) {
       const selectedAlgorithm: Function = algorithmDict[algorithm];
       const [shortestPath, timeTaken] = await selectedAlgorithm(
+        city,
         startNode,
         endNode,
         delayInMs,
