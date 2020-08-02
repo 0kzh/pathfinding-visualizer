@@ -79,6 +79,14 @@ const App: React.FC<{}> = () => {
         setLng(cityLocs[city].lng);
       }
 
+      // also clear nodes
+      setStartNode(null);
+      setEndNode(null);
+      setPath(new Array<LatLng>());
+      setPathFound(false);
+      setStartMarkerPos(null);
+      setEndMarkerPos(null);
+
       setNodeData(getCityData(city));
     }
   }, [city]);
