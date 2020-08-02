@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" viewBox="2.9537366025546703 2.9583888807321728 91.09454436450835 91.08640287769776" width="79.09" height="79.09">
+    <defs>
+        <path d="M48.5 88.04C26.68 88.04 8.95 70.33 8.95 48.5C8.95 26.67 26.68 8.96 48.5 8.96C70.32 8.96 88.05 26.67 88.05 48.5C88.05 70.33 70.32 88.04 48.5 88.04Z" id="n1Wuej6sxD"></path>
+        <path d="M48.5 76.35C33.13 76.35 20.66 63.86 20.66 48.5C20.66 33.13 33.13 20.66 48.5 20.66C63.87 20.66 76.34 33.13 76.34 48.5C76.34 63.86 63.87 76.35 48.5 76.35Z" id="bKPjcRug1"></path>
+        <text id="cTMoc0nq4" x="37" y="48" font-size="28" font-family="Arial" font-weight="normal" font-style="normal" letter-spacing="0" alignment-baseline="before-edge" transform="matrix(1 0 0 1 2.7865328332585904 -15)" style="line-height:100%" xml:space="preserve" dominant-baseline="text-before-edge">
+            <tspan x="37" dy="0em" alignment-baseline="before-edge" dominant-baseline="text-before-edge" text-anchor="start">A</tspan>
+        </text>
+    </defs>
+    <g>
+        <g>
+            <g>
+                <filter id="shadow7745633" x="-8.05" y="-8.04" width="113.09" height="113.09" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse">
+                    <feFlood></feFlood>
+                    <feComposite in2="SourceAlpha" operator="in"></feComposite>
+                    <feGaussianBlur stdDeviation="2.45"></feGaussianBlur>
+                    <feOffset dx="0" dy="0" result="afterOffset"></feOffset>
+                    <feFlood flood-color="#000000" flood-opacity="0.5"></feFlood>
+                    <feComposite in2="afterOffset" operator="in"></feComposite>
+                    <feMorphology operator="dilate" radius="0"></feMorphology>
+                    <feComposite in2="SourceAlpha" operator="out"></feComposite>
+                </filter>
+                <path d="M48.5 88.04C26.68 88.04 8.95 70.33 8.95 48.5C8.95 26.67 26.68 8.96 48.5 8.96C70.32 8.96 88.05 26.67 88.05 48.5C88.05 70.33 70.32 88.04 48.5 88.04Z" id="d459nlJefE" fill="white" fill-opacity="1" filter="url(#shadow7745633)"></path>
+            </g>
+            <use xlink:href="#n1Wuej6sxD" opacity="1" fill="#ffffff" fill-opacity="1"></use>
+            <g>
+                <use xlink:href="#n1Wuej6sxD" opacity="1" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-opacity="0"></use>
+            </g>
+        </g>
+        <g>
+            <use xlink:href="#bKPjcRug1" opacity="1" fill="#007bff" fill-opacity="1"></use>
+            <g>
+                <use xlink:href="#bKPjcRug1" opacity="1" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-opacity="0"></use>
+            </g>
+        </g>
+        <g id="cQY6WxlIQ">
+            <use xlink:href="#cTMoc0nq4" opacity="1" fill="#ffffff" fill-opacity="1"></use>
+        </g>
+    </g>
+</svg>

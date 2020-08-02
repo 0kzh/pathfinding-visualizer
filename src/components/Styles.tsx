@@ -37,6 +37,7 @@ export const Button = styled.button`
 `;
 
 export const IconWrapper = styled.div`
+  cursor: pointer;
   margin-left: 10px;
 `;
 

@@ -27,7 +27,7 @@ import {
 import PathfindingMarkers from "./components/PathfindingMarkers";
 import { hasKey } from "./utils";
 import { nodeInfo, qtNode, pair, dataDict } from "./types";
-import { marker, nodeMarker, visitedNodeMarker } from "./Icons";
+import { markerA, markerB, nodeMarker } from "./Icons";
 import * as d3 from "d3-quadtree";
 import { MarkGithubIcon, InfoIcon } from "@primer/octicons-react";
 import { cities, algos, cityLocs, cityData, getCityData } from "./constants";
@@ -37,14 +37,7 @@ const App: React.FC<{}> = () => {
   const [lng, setLng] = useState(-122.4372);
   const [lat, setLat] = useState(37.7546);
   const [zoom, setZoom] = useState(11.48);
-  // let numEdges = 0;
-  // Object.keys(nodeData).map((key) => {
-  //   if (hasKey(nodeData, key)) {
-  //     numEdges += nodeData[key].adj.length;
-  //   }
-  // });
-  // console.log(numEdges / 2);
-  // console.log(Object.keys(nodeData).length);
+
   const [worker, setWorker] = useState(() => new Worker());
   const [timeTaken, setTimeTaken] = useState<number>(-1);
 
@@ -278,13 +271,19 @@ const App: React.FC<{}> = () => {
           <IconWrapper>
             <InfoIcon size={24} />
           </IconWrapper>
-          <IconWrapper>
+          <IconWrapper
+            onClick={() =>
+              window.open(
+                "https://github.com/0kzh/pathfinding-visualizer",
+                "_blank"
+              )
+            }
+          >
             <MarkGithubIcon size={24} />
           </IconWrapper>
         </Child>
       </Settings>
 
-      {/* <Stats city={city} /> */}
       <Map
         preferCanvas
         center={[lat, lng]}
@@ -306,7 +305,7 @@ const App: React.FC<{}> = () => {
           <Marker
             ref={startNodeMarker}
             position={[startMarkerPos.lat, startMarkerPos.lng]}
-            icon={marker}
+            icon={markerA}
             draggable
             ondrag={onStartNodeDrag}
             ondragend={onStartNodeDragEnd}
@@ -317,7 +316,7 @@ const App: React.FC<{}> = () => {
           <Marker
             ref={endNodeMarker}
             position={[endMarkerPos.lat, endMarkerPos.lng]}
-            icon={marker}
+            icon={markerB}
             draggable
             ondragstart={() => {
               setPath([]);

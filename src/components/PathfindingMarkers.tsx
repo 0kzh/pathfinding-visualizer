@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { getCityData } from "../constants";
 import { hasKey } from "../utils";
 import { Marker } from "react-leaflet";
-import { marker, nodeMarker, visitedNodeMarker } from "../Icons";
+import { nodeMarker } from "../Icons";
 import { nodeInfo, qtNode, pair } from "../types";
 import CanvasMarkersLayer from "../lib/react-leaflet-canvas-markers/CanvasMarkersLayer";
 
