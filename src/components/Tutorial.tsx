@@ -10,7 +10,7 @@ const Subtitle = styled.div`
   margin-bottom: 5px;
 `;
 
-const Description = styled.p`
+const Description = styled.div`
   line-height: 1.5;
 `;
 
@@ -89,7 +89,12 @@ const Tutorial: React.FC<Props> = ({ modalIsOpen, setIsOpen }) => {
       <h2>About the Algorithms</h2>
       <Description>
         {descriptions.map((algo) => (
-          <Algorithm name={algo.name} desc={algo.desc} tags={algo.tags} />
+          <Algorithm
+            key={algo.name}
+            name={algo.name}
+            desc={algo.desc}
+            tags={algo.tags}
+          />
         ))}
       </Description>
     </div>
@@ -115,7 +120,9 @@ const Tutorial: React.FC<Props> = ({ modalIsOpen, setIsOpen }) => {
           justifyContent: "center",
         }}
       >
-        <Button onClick={() => setIsOpen(false)}>Close</Button>
+        <Button onClick={() => setIsOpen(false)} style={{ marginTop: 20 }}>
+          Close
+        </Button>
       </div>
     </Modal>
   );
