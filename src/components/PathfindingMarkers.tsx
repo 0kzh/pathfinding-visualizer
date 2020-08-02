@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { getCityData } from "../constants";
 import { hasKey } from "../utils";
 import { Marker } from "react-leaflet";
 import { nodeMarker } from "../Icons";
-import { nodeInfo, qtNode, pair } from "../types";
+import { nodeInfo } from "../types";
 import CanvasMarkersLayer from "../lib/react-leaflet-canvas-markers/CanvasMarkersLayer";
 
 interface Props {
@@ -26,6 +26,7 @@ const PathfindingMarkers: React.FC<Props> = ({ city, nodes }) => {
             />
           );
         }
+        return null;
       })}
     </CanvasMarkersLayer>
   );

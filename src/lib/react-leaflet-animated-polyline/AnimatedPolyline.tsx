@@ -1,10 +1,5 @@
 import Animated_Polyline from "./Leaflet.AnimatedPolyline";
-import {
-  Polyline as LeafletPolyline,
-  LatLng,
-  PathOptions,
-  PolylineOptions,
-} from "leaflet";
+import { LatLng, PathOptions, PolylineOptions } from "leaflet";
 import { withLeaflet, Path, MapLayerProps } from "react-leaflet";
 
 type LeafletElement = Animated_Polyline;
@@ -30,7 +25,7 @@ class AnimatedPolyline extends Path<Props, LeafletElement> {
       toProps.positions.length > 0
     ) {
       this.leafletElement.setSnakeLatLngs(toProps.positions);
-      if (fromProps.positions.length == 0) {
+      if (fromProps.positions.length === 0) {
         this.leafletElement.snakeIn(toProps.snakeSpeed);
       } else {
         this.leafletElement.snakeIn(Infinity);

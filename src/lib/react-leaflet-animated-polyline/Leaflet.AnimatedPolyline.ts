@@ -1,9 +1,4 @@
-import {
-  Polyline as LeafletPolyline,
-  LatLngExpression,
-  PolylineOptions,
-  LatLng,
-} from "leaflet";
+import { Polyline as LeafletPolyline, LatLngExpression } from "leaflet";
 
 if (typeof window.exports != "object") {
   //cdn usage on browsers without "exports" variable
@@ -51,7 +46,7 @@ class Animated_Polyline extends Leaflet_module.Polyline {
   /// TODO: accept a 'map' parameter, fall back to addTo() in case
   /// performance.now is not available.
   snakeIn = (snakeSpeed: number) => {
-    if (this._snakeLatLngs.length == 0) return;
+    if (this._snakeLatLngs.length === 0) return;
     if (this._snaking) {
       return;
     }

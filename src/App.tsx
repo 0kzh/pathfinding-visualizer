@@ -1,21 +1,13 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
-import { LeafletEvent, LeafletMouseEvent, Icon, LatLng } from "leaflet";
-import {
-  Map,
-  Marker,
-  Polyline,
-  PolylineProps,
-  TileLayer,
-  ZoomControl,
-} from "react-leaflet";
+import React, { useEffect, useState, useRef } from "react";
+import { LeafletMouseEvent, LatLng } from "leaflet";
+import { Map, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPolyline";
 
 // eslint-disable-next-line
 import Worker from "worker-loader!./Worker";
 
-import { ValueType } from "react-select/src/types";
 import Tutorial from "./components/Tutorial";
-// import Settings from "./components/Settings";
+
 import {
   Settings,
   Child,
@@ -27,17 +19,17 @@ import {
 } from "./components/Styles";
 import PathfindingMarkers from "./components/PathfindingMarkers";
 import { hasKey } from "./utils";
-import { nodeInfo, qtNode, pair, dataDict } from "./types";
-import { markerA, markerB, nodeMarker } from "./Icons";
+import { qtNode, dataDict } from "./types";
+import { markerA, markerB } from "./Icons";
 import * as d3 from "d3-quadtree";
 import { MarkGithubIcon, InfoIcon } from "@primer/octicons-react";
-import { cities, algos, cityLocs, cityData, getCityData } from "./constants";
+import { cities, algos, cityLocs, getCityData } from "./constants";
 import "./App.css";
 
 const App: React.FC<{}> = () => {
-  const [lng, setLng] = useState(-122.4372);
-  const [lat, setLat] = useState(37.7546);
-  const [zoom, setZoom] = useState(11.48);
+  const [lng, setLng] = useState<number>(-122.4372);
+  const [lat, setLat] = useState<number>(37.7546);
+  const [zoom, setZoom] = useState<number>(11.48);
 
   const [worker, setWorker] = useState(() => new Worker());
   const [timeTaken, setTimeTaken] = useState<number>(-1);
@@ -100,7 +92,6 @@ const App: React.FC<{}> = () => {
         }
       } else if (type === "setPath") {
         const path = data.path;
-        const timeTaken = data.timeTaken;
         if (path) {
           setPathFound(true);
           setTimeTaken(data.timeTaken);
@@ -212,14 +203,9 @@ const App: React.FC<{}> = () => {
     setNodes((oldNodes) => new Set([...oldNodes, ...nodesToRender]));
   };
 
-  const clearNodes = () => {
-    setNodes(new Set<string>());
-  };
-
   const pathfindingComplete = (path: Array<LatLng>) => {
     setPath(path);
     setIsRunning(false);
-    // clearNodes();
   };
 
   const TimeTaken = () => {

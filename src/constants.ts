@@ -1,9 +1,8 @@
-import { nodeInfo, qtNode, pair, cityDict, dataDict } from "./types";
+import { pair, cityDict, dataDict } from "./types";
 import sanFran from "./data/sanfran.json";
 import vancouver from "./data/vancouver.json";
 import newYork from "./data/newyork.json";
 import waterloo from "./data/waterloo.json";
-import { hasKey } from "./utils";
 
 export const cities: Array<pair> = [
   { value: "san_francisco", label: "San Francisco (37K nodes, 3.9 MB)" },

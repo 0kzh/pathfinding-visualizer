@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
 import { Button } from "./Styles";
 import { descriptions } from "../constants";
-import { hasKey } from "../utils";
 
 const Subtitle = styled.div`
   font-size: 18px;
@@ -67,18 +66,6 @@ interface Props {
 const Tutorial: React.FC<Props> = ({ modalIsOpen, setIsOpen }) => {
   const [tab, setTab] = useState("about");
 
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
-  const afterOpenModal = () => {
-    // references are now sync'd and can be accessed.
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
   const About = () => (
     <div>
       <h2>Welcome to Maps Pathfinding Visualizer</h2>
@@ -111,8 +98,7 @@ const Tutorial: React.FC<Props> = ({ modalIsOpen, setIsOpen }) => {
   return (
     <Modal
       isOpen={modalIsOpen}
-      onAfterOpen={afterOpenModal}
-      onRequestClose={closeModal}
+      onRequestClose={() => setIsOpen(false)}
       style={customStyles}
     >
       <Tabs>
@@ -129,7 +115,7 @@ const Tutorial: React.FC<Props> = ({ modalIsOpen, setIsOpen }) => {
           justifyContent: "center",
         }}
       >
-        <Button onClick={closeModal}>Close</Button>
+        <Button onClick={() => setIsOpen(false)}>Close</Button>
       </div>
     </Modal>
   );
