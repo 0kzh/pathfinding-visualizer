@@ -228,10 +228,6 @@ const App: React.FC<{}> = () => {
     );
   };
 
-  useEffect(() => {
-    console.log(isRunning);
-  }, [isRunning]);
-
   return (
     <div className="App">
       <Tutorial modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
@@ -246,7 +242,9 @@ const App: React.FC<{}> = () => {
           >
             <Select onChange={(e) => setAlgorithm(e.target.value)}>
               {algos.map((algo) => (
-                <option value={algo.value}>{algo.label}</option>
+                <option key={algo.value} value={algo.value}>
+                  {algo.label}
+                </option>
               ))}
             </Select>
             <TimeTaken />
@@ -255,7 +253,9 @@ const App: React.FC<{}> = () => {
         <Child style={{ justifyContent: "center" }}>
           <Select onChange={(e) => setCity(e.target.value)}>
             {cities.map((city) => (
-              <option value={city.value}>{city.label}</option>
+              <option key={city.value} value={city.value}>
+                {city.label}
+              </option>
             ))}
           </Select>
           <Button
