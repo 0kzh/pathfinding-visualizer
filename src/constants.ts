@@ -2,13 +2,14 @@ import { nodeInfo, qtNode, pair, cityDict, dataDict } from "./types";
 import sanFran from "./data/sanfran.json";
 import vancouver from "./data/vancouver.json";
 import newYork from "./data/newyork.json";
+import waterloo from "./data/waterloo.json";
 import { hasKey } from "./utils";
 
 export const cities: Array<pair> = [
   { value: "san_francisco", label: "San Francisco (37K nodes, 3.9 MB)" },
   { value: "vancouver", label: "Vancouver (24K nodes, 2.5 MB)" },
   { value: "new_york", label: "New York (177K nodes, 17.7 MB)" },
-  { value: "waterloo", label: "Waterloo" },
+  { value: "waterloo", label: "Waterloo (22K nodes, 2.0 MB)" },
 ];
 
 export const algos: Array<pair> = [
@@ -30,7 +31,7 @@ export const cityData: cityDict = {
   san_francisco: sanFran,
   vancouver: vancouver,
   new_york: newYork,
-  waterloo: sanFran,
+  waterloo: waterloo,
 };
 
 export function getCityData(city: string): dataDict {
