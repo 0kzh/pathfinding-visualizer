@@ -51,6 +51,7 @@ const App: React.FC<{}> = () => {
   // pathfinding state
   const [nodes, setNodes] = useState<Set<string>>(new Set<string>());
   const [pathFound, setPathFound] = useState<boolean>(false);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
 
   // final pathfinding path
   const [path, setPath] = useState<Array<LatLng>>(new Array<LatLng>());
@@ -186,6 +187,7 @@ const App: React.FC<{}> = () => {
     if (shouldReset) {
       setNodes(new Set<string>());
     }
+    setIsRunning(true);
     if (startNode !== null && endNode !== null) {
       worker.postMessage(
         JSON.stringify({
@@ -216,6 +218,7 @@ const App: React.FC<{}> = () => {
 
   const pathfindingComplete = (path: Array<LatLng>) => {
     setPath(path);
+    setIsRunning(false);
     // clearNodes();
   };
 
@@ -238,6 +241,10 @@ const App: React.FC<{}> = () => {
       </StatContainer>
     );
   };
+
+  useEffect(() => {
+    console.log(isRunning);
+  }, [isRunning]);
 
   return (
     <div className="App">
@@ -266,7 +273,7 @@ const App: React.FC<{}> = () => {
             ))}
           </Select>
           <Button
-            disabled={!startNode || !endNode}
+            disabled={isRunning || !startNode || !endNode}
             onClick={() => runPathfinding(100, true)}
           >
             Visualize
