@@ -22,9 +22,10 @@ const bfs = async (
   cb: (toRender: Set<string>) => void
 ) => {
   const nodeData = getCityData(city);
+  let paths = [];
+
   // we use nulls to keep track of the current level
   let queue: Deque<string | null> = new Deque();
-  let path: Array<string> = [];
   let previous: previousDict = {};
   let discovered: Set<string> = new Set<string>();
   let rendered: Set<string> = new Set<string>();
@@ -63,6 +64,7 @@ const bfs = async (
     if (!prev) continue;
 
     let node = prev;
+    discovered.add(node);
     total++;
 
     if (total % (100 / total) === 0 && !rendered.has(node)) {
@@ -71,15 +73,17 @@ const bfs = async (
     }
 
     if (node == end) {
+      let path: Array<string> = [];
       cb(nextRender);
       while (previous[node]) {
         path.push(node);
         const prev = previous[node];
+        console.log(prev);
         if (prev !== null) {
           node = prev;
         }
       }
-      break;
+      return [path.reverse(), timer.time()];
     }
 
     if (hasKey(nodeData, node)) {
@@ -88,14 +92,13 @@ const bfs = async (
 
       neighbors.forEach((neighbor) => {
         if (!discovered.has(neighbor)) {
-          discovered.add(node);
           previous[neighbor] = node;
           queue.push(neighbor);
         }
       });
     }
   }
-  return [path.reverse(), timer.time()];
+  return [[], timer.time()];
 };
 
 export default bfs;
