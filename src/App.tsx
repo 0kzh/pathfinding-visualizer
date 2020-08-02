@@ -14,6 +14,7 @@ import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPoly
 import Worker from "worker-loader!./Worker";
 
 import { ValueType } from "react-select/src/types";
+import Tutorial from "./components/Tutorial";
 // import Settings from "./components/Settings";
 import {
   Settings,
@@ -56,6 +57,9 @@ const App: React.FC<{}> = () => {
 
   // configuration options
   const [algorithm, setAlgorithm] = useState<string>("dijkstras");
+
+  // tutorial modal state
+  const [modalIsOpen, setIsOpen] = useState<boolean>(false);
 
   const [city, setCity] = useState<string>("san_francisco");
 
@@ -237,6 +241,7 @@ const App: React.FC<{}> = () => {
 
   return (
     <div className="App">
+      <Tutorial modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
       <Settings>
         <Child style={{ justifyContent: "flex-start" }}>
           <div
@@ -268,7 +273,7 @@ const App: React.FC<{}> = () => {
           </Button>
         </Child>
         <Child style={{ justifyContent: "flex-end" }}>
-          <IconWrapper>
+          <IconWrapper onClick={() => setIsOpen(true)}>
             <InfoIcon size={24} />
           </IconWrapper>
           <IconWrapper

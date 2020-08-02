@@ -20,6 +20,42 @@ export const algos: Array<pair> = [
   { value: "dfs", label: "Depth First Search" },
 ];
 
+interface algoDesc {
+  name: string;
+  desc: string;
+  tags: string;
+}
+
+export const descriptions: Array<algoDesc> = [
+  {
+    name: "Dijkstra",
+    desc:
+      "Optimized breadth-first search that prioritizes exploring lower-cost paths.",
+    tags: "weighted, shortest path guaranteed",
+  },
+  {
+    name: "A*",
+    desc:
+      "Optimized Dijkstra for when we know end node location. Uses lat/long distance as heuristic.",
+    tags: "weighted, shortest path guaranteed",
+  },
+  {
+    name: "Greedy Best-First Search",
+    desc: "Faster version of A* that doesn't guarantee shortest path",
+    tags: "weighted, shortest path not guaranteed",
+  },
+  {
+    name: "Breadth First Search",
+    desc: "Explores all nodes equally in all directions, level-by-level",
+    tags: "unweighted, shortest path guaranteed",
+  },
+  {
+    name: "Depth First Search",
+    desc: "Explores as far as possible along each branch before backtracing",
+    tags: "unweighted, shortest path not guaranteed",
+  },
+];
+
 export const cityLocs = {
   san_francisco: { lat: 37.7749, lng: -122.4194 },
   vancouver: { lat: 49.2827, lng: -123.1207 },
