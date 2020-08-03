@@ -25,7 +25,7 @@ export const Select = styled.select`
 
 export const Button = styled.button`
   cursor: pointer;
-  background-color: ${(props) => (props.disabled ? "#e8e8e8" : "#333")};
+  background-color: ${(props) => (props.disabled ? "#e8e8e8" : "#007bfe")};
   // padding: 0.85rem 1.85rem;
   padding: 8px 16px;
   color: ${(props) => (props.disabled ? "#c7c7c7" : "white")};

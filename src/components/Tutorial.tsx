@@ -30,19 +30,6 @@ const Tab = styled.div`
   text-decoration: underline;
 `;
 
-const customStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    maxWidth: "50%",
-  },
-  overlay: { zIndex: 9999 },
-};
-
 Modal.setAppElement("#root");
 
 const Algorithm: React.FC<{ name: string; desc: string; tags: string }> = ({
@@ -59,12 +46,33 @@ const Algorithm: React.FC<{ name: string; desc: string; tags: string }> = ({
 );
 
 interface Props {
+  darkMode: boolean;
   modalIsOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-const Tutorial: React.FC<Props> = ({ modalIsOpen, setIsOpen }) => {
+const Tutorial: React.FC<Props> = ({ darkMode, modalIsOpen, setIsOpen }) => {
   const [tab, setTab] = useState("about");
+
+  const customStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      maxWidth: "50%",
+      padding: 30,
+      background: darkMode ? "#212121" : "white",
+      color: darkMode ? "white" : "black",
+      borderColor: darkMode ? "#353535" : "white",
+    },
+    overlay: {
+      zIndex: 9999,
+      backgroundColor: darkMode ? "rgba(0,0,0, 0.3)" : "rgba(255,255,255,0.4)",
+    },
+  };
 
   const About = () => (
     <div>

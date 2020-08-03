@@ -22,7 +22,12 @@ import { hasKey } from "./utils";
 import { qtNode, dataDict } from "./types";
 import { markerA, markerB } from "./Icons";
 import * as d3 from "d3-quadtree";
-import { MarkGithubIcon, InfoIcon } from "@primer/octicons-react";
+import {
+  MarkGithubIcon,
+  InfoIcon,
+  MoonIcon,
+  SunIcon,
+} from "@primer/octicons-react";
 import { cities, algos, cityLocs, getCityData } from "./constants";
 import "./App.css";
 
@@ -50,6 +55,7 @@ const App: React.FC<{}> = () => {
 
   // configuration options
   const [algorithm, setAlgorithm] = useState<string>("dijkstras");
+  const [darkMode, setDarkMode] = useState<boolean>(true);
 
   // tutorial modal state
   const [modalIsOpen, setIsOpen] = useState<boolean>(false);
@@ -226,9 +232,17 @@ const App: React.FC<{}> = () => {
     );
   };
 
+  const layerTiles = darkMode
+    ? "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png"
+    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+
   return (
     <div className="App">
-      <Tutorial modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
+      <Tutorial
+        darkMode={darkMode}
+        modalIsOpen={modalIsOpen}
+        setIsOpen={setIsOpen}
+      />
       <Settings>
         <Child style={{ justifyContent: "flex-start" }}>
           <div
@@ -264,10 +278,20 @@ const App: React.FC<{}> = () => {
           </Button>
         </Child>
         <Child style={{ justifyContent: "flex-end" }}>
-          <IconWrapper onClick={() => setIsOpen(true)}>
+          <IconWrapper
+            style={{ color: darkMode ? "white" : "black" }}
+            onClick={() => setDarkMode(!darkMode)}
+          >
+            {darkMode ? <SunIcon size={24} /> : <MoonIcon size={24} />}
+          </IconWrapper>
+          <IconWrapper
+            style={{ color: darkMode ? "white" : "black" }}
+            onClick={() => setIsOpen(true)}
+          >
             <InfoIcon size={24} />
           </IconWrapper>
           <IconWrapper
+            style={{ color: darkMode ? "white" : "black" }}
             onClick={() =>
               window.open(
                 "https://github.com/0kzh/pathfinding-visualizer",
@@ -288,7 +312,7 @@ const App: React.FC<{}> = () => {
         onClick={handleClick}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          url={layerTiles}
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
 
