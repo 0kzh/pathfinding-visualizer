@@ -69,10 +69,11 @@ const App: React.FC<{}> = () => {
         setLng(cityLocs[city].lng);
       }
 
-      // also clear nodes
+      // reset state
       setStartNode(null);
       setEndNode(null);
       setPath(new Array<LatLng>());
+      setTimeTaken(-1);
       setPathFound(false);
       setStartMarkerPos(null);
       setEndMarkerPos(null);
@@ -161,9 +162,6 @@ const App: React.FC<{}> = () => {
       setStartNode(closest.key);
       setStartMarkerPos(new LatLng(closest.lat, closest.lon));
     }
-    // if (pathFound) {
-    //   runPathfinding(0, true);
-    // }
   };
 
   const onEndNodeDragEnd = (e: any) => {
