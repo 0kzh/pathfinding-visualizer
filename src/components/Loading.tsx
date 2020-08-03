@@ -16,6 +16,7 @@ const Text = styled.h1`
   justify-content: center;
   align-items: center;
   font-weight: 400;
+  // text-transform: uppercase;
 `;
 
 interface Props {
@@ -26,7 +27,8 @@ interface Props {
 const Loading: React.FC<Props> = ({ darkMode, progress }) => {
   const customStyles = {
     backgroundColor: darkMode ? "#090909" : "#FBF8F3",
-    color: darkMode ? "white" : "black",
+    color: darkMode ? "white" : "#405C78",
+    border: darkMode ? "2px solid #444444" : "2px solid white",
   };
 
   return (
