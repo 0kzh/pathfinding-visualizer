@@ -91,6 +91,7 @@ export async function getCityData(
     return cityData[city].data;
   } else {
     const file = cityData[city].file;
+    setLoading(true);
     const { data: jsonData } = await axios.get(
       `https://pathfinding.kelvinzhang.ca/data/${file}`,
       {
@@ -99,7 +100,7 @@ export async function getCityData(
             (progressEvent.loaded * 100) / progressEvent.total
           );
           onProgress(percentage);
-          if (percentage === 100) {
+          if (percentage >= 100) {
             setTimeout(() => {
               setLoading(false);
               cityData[city].loaded = true;
@@ -109,7 +110,6 @@ export async function getCityData(
       }
     );
 
-    console.log(jsonData);
     cityData[city].data = jsonData;
     return cityData[city].data;
   }
