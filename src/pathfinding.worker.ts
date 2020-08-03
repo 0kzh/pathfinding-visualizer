@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { getCityData } from "./constants";
 
 import dijkstra from "./algorithms/dijkstra";
@@ -74,5 +75,3 @@ const findPath = async (
     }
   }
 };
-
-export default {};

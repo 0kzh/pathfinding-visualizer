@@ -112,6 +112,7 @@
     "@types/react-leaflet": "^2.5.1",
     "@types/react-select": "^3.0.13",
     "@types/styled-components": "^5.1.0",
+    "fork-ts-checker-webpack-plugin": "^4.0.4",
     "worker-loader": "^2.0.0"
   },
   "jest": {
