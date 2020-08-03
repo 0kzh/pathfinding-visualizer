@@ -7,6 +7,7 @@ import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPoly
 import Worker from "worker-loader!./Worker";
 
 import Tutorial from "./components/Tutorial";
+import Loading from "./components/Loading";
 
 import {
   Settings,
@@ -55,7 +56,7 @@ const App: React.FC<{}> = () => {
 
   // configuration options
   const [algorithm, setAlgorithm] = useState<string>("dijkstras");
-  const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
 
@@ -241,7 +242,7 @@ const App: React.FC<{}> = () => {
     : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
   if (loading) {
-    return <div className="App">Loading city data {progress}%</div>;
+    return <Loading darkMode={darkMode} progress={progress} />;
   }
 
   return (
@@ -260,7 +261,10 @@ const App: React.FC<{}> = () => {
               flexDirection: "column",
             }}
           >
-            <Select onChange={(e) => setAlgorithm(e.target.value)}>
+            <Select
+              onChange={(e) => setAlgorithm(e.target.value)}
+              value={algorithm}
+            >
               {algos.map((algo) => (
                 <option key={algo.value} value={algo.value}>
                   {algo.label}
@@ -271,7 +275,7 @@ const App: React.FC<{}> = () => {
           </div>
         </Child>
         <Child style={{ justifyContent: "center" }}>
-          <Select onChange={(e) => setCity(e.target.value)}>
+          <Select onChange={(e) => setCity(e.target.value)} value={city}>
             {cities.map((city) => (
               <option key={city.value} value={city.value}>
                 {city.label}

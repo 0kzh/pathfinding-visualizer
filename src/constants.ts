@@ -1,6 +1,13 @@
 import { pair, cityDict, dataDict } from "./types";
 import axios from "axios";
 
+let endpoint: string;
+if (process.env.NODE_ENV === "production") {
+  endpoint = "https://pathfinding.kelvinzhang.ca/data";
+} else {
+  endpoint = "./data";
+}
+
 export const cities: Array<pair> = [
   { value: "san_francisco", label: "San Francisco (37K nodes, 3.9 MB)" },
   { value: "vancouver", label: "Vancouver (24K nodes, 2.5 MB)" },
@@ -92,25 +99,22 @@ export async function getCityData(
   } else {
     const file = cityData[city].file;
     setLoading(true);
-    const { data: jsonData } = await axios.get(
-      `https://pathfinding.kelvinzhang.ca/data/${file}`,
-      {
-        onDownloadProgress: (progressEvent) => {
+    const { data: jsonData } = await axios.get(`${endpoint}/${file}`, {
+      onDownloadProgress: (progressEvent) => {
+        if (progressEvent.lengthComputable) {
           const percentage = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
           );
           onProgress(percentage);
-          if (percentage >= 100) {
-            setTimeout(() => {
-              setLoading(false);
-              cityData[city].loaded = true;
-            }, 400);
-          }
-        },
-      }
-    );
+        }
+      },
+    });
 
     cityData[city].data = jsonData;
+    setTimeout(() => {
+      setLoading(false);
+      cityData[city].loaded = true;
+    }, 200);
     return cityData[city].data;
   }
 }
