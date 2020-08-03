@@ -20,7 +20,6 @@
 
 # creds
 src/creds.js
-package-lock.json
 
 npm-debug.log*
 yarn-debug.log*
