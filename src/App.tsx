@@ -56,6 +56,8 @@ const App: React.FC<{}> = () => {
   // configuration options
   const [algorithm, setAlgorithm] = useState<string>("dijkstras");
   const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [progress, setProgress] = useState<number>(0);
 
   // tutorial modal state
   const [modalIsOpen, setIsOpen] = useState<boolean>(false);
@@ -84,7 +86,9 @@ const App: React.FC<{}> = () => {
       setStartMarkerPos(null);
       setEndMarkerPos(null);
 
-      setNodeData(getCityData(city));
+      getCityData(city, setLoading, setProgress).then((data) => {
+        setNodeData(data);
+      });
     }
   }, [city]);
 
@@ -236,6 +240,10 @@ const App: React.FC<{}> = () => {
     ? "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png"
     : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
+  if (loading) {
+    return <div className="App">Loading city data {progress}%</div>;
+  }
+
   return (
     <div className="App">
       <Tutorial
@@ -318,7 +326,7 @@ const App: React.FC<{}> = () => {
 
         <ZoomControl position={"bottomleft"} />
 
-        <PathfindingMarkers city={city} nodes={nodes} />
+        <PathfindingMarkers nodeData={nodeData} nodes={nodes} />
 
         {/* Render start/end markers */}
         {startMarkerPos && (

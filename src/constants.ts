@@ -1,8 +1,5 @@
 import { pair, cityDict, dataDict } from "./types";
-import sanFran from "./data/sanfran.json";
-import vancouver from "./data/vancouver.json";
-import newYork from "./data/newyork.json";
-import waterloo from "./data/waterloo.json";
+import axios from "axios";
 
 export const cities: Array<pair> = [
   { value: "san_francisco", label: "San Francisco (37K nodes, 3.9 MB)" },
@@ -63,12 +60,57 @@ export const cityLocs = {
 };
 
 export const cityData: cityDict = {
-  san_francisco: sanFran,
-  vancouver: vancouver,
-  new_york: newYork,
-  waterloo: waterloo,
+  san_francisco: {
+    data: {},
+    file: "sanfran.json",
+    loaded: false,
+  },
+  vancouver: {
+    data: {},
+    file: "vancouver.json",
+    loaded: false,
+  },
+  new_york: {
+    data: {},
+    file: "newyork.json",
+    loaded: false,
+  },
+  waterloo: {
+    data: {},
+    file: "waterloo.json",
+    loaded: false,
+  },
 };
 
-export function getCityData(city: string): dataDict {
-  return cityData[city];
+export async function getCityData(
+  city: string,
+  setLoading: (isLoading: boolean) => void,
+  onProgress: (progress: number) => void
+) {
+  if (cityData[city].loaded) {
+    return cityData[city].data;
+  } else {
+    const file = cityData[city].file;
+    const { data: jsonData } = await axios.get(
+      `https://pathfinding.kelvinzhang.ca/data/${file}`,
+      {
+        onDownloadProgress: (progressEvent) => {
+          const percentage = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          onProgress(percentage);
+          if (percentage === 100) {
+            setTimeout(() => {
+              setLoading(false);
+              cityData[city].loaded = true;
+            }, 400);
+          }
+        },
+      }
+    );
+
+    console.log(jsonData);
+    cityData[city].data = jsonData;
+    return cityData[city].data;
+  }
 }

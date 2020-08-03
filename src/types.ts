@@ -25,5 +25,9 @@ export interface dataDict {
 }
 
 export interface cityDict {
-  [key: string]: dataDict;
+  [key: string]: {
+    data: dataDict;
+    file: string;
+    loaded: boolean;
+  };
 }

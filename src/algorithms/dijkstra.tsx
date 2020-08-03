@@ -31,7 +31,11 @@ const dijkstra = async (
   cb: (toRender: Set<string>) => void
 ) => {
   console.log(city);
-  const nodeData = getCityData(city);
+  const nodeData = await getCityData(
+    city,
+    () => {},
+    () => {}
+  );
   let queue = new TinyQueue([], (a: heapObj, b: heapObj) => {
     return a.distance - b.distance;
   });

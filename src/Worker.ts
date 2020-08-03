@@ -50,7 +50,11 @@ const findPath = async (
   delayInMs: number,
   addNodesHandler: (node: Set<string>) => void
 ) => {
-  const nodeData = getCityData(city);
+  const nodeData = await getCityData(
+    city,
+    () => {},
+    () => {}
+  );
   if (startNode && endNode && algorithm) {
     if (hasKey(algorithmDict, algorithm)) {
       const selectedAlgorithm: Function = algorithmDict[algorithm];

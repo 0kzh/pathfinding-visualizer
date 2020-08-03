@@ -30,7 +30,11 @@ const greedy = async (
   delay: number,
   cb: (toRender: Set<string>) => void
 ) => {
-  const nodeData = getCityData(city);
+  const nodeData = await getCityData(
+    city,
+    () => {},
+    () => {}
+  );
 
   const getDistance = function (nodeA: string, nodeB: string) {
     if (hasKey(nodeData, nodeA) && hasKey(nodeData, nodeB)) {

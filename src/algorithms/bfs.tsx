@@ -21,7 +21,11 @@ const bfs = async (
   delay: number,
   cb: (toRender: Set<string>) => void
 ) => {
-  const nodeData = getCityData(city);
+  const nodeData = await getCityData(
+    city,
+    () => {},
+    () => {}
+  );
   let paths = [];
 
   // we use nulls to keep track of the current level

@@ -1,18 +1,16 @@
 import React from "react";
-import { getCityData } from "../constants";
 import { hasKey } from "../utils";
 import { Marker } from "react-leaflet";
 import { nodeMarker } from "../Icons";
-import { nodeInfo } from "../types";
+import { nodeInfo, dataDict } from "../types";
 import CanvasMarkersLayer from "../lib/react-leaflet-canvas-markers/CanvasMarkersLayer";
 
 interface Props {
-  city: string;
+  nodeData: dataDict;
   nodes: Set<string>;
 }
 
-const PathfindingMarkers: React.FC<Props> = ({ city, nodes }) => {
-  const nodeData = getCityData(city);
+const PathfindingMarkers: React.FC<Props> = ({ nodeData, nodes }) => {
   return (
     <CanvasMarkersLayer>
       {Array.from(nodes).map((node: string) => {
