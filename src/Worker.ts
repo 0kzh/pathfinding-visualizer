@@ -22,6 +22,7 @@ const ctx: Worker = self as any;
 
 // Respond to message from parent thread
 ctx.addEventListener("message", async (event) => {
+  console.log("new message!");
   const { city, algorithm, startNode, endNode, delayInMs } = JSON.parse(
     event.data
   );

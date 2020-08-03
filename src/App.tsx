@@ -4,7 +4,7 @@ import { Map, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import AnimatedPolyline from "./lib/react-leaflet-animated-polyline/AnimatedPolyline";
 
 // eslint-disable-next-line
-import Worker from "worker-loader!./pathfinding.worker";
+import Worker from "worker-loader!./Worker";
 
 import Tutorial from "./components/Tutorial";
 

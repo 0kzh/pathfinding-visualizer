@@ -16,10 +16,5 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": [
-    "src",
-    "decs.d.ts",
-    "worker-loader.d.ts",
-    "node_modules/react-leaflet-animated-polyline/AnimatedPolyline.tsx"
-  ]
+  "include": ["src", "decs.d.ts", "worker-loader.d.ts"]
 }
