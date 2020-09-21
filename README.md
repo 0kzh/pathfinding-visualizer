@@ -1,68 +1,134 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1>Pathfinding Visualizer</h1>
 
-## Available Scripts
+## [Try it out](https://pathfinding.kelvinzhang.ca/)
 
-In the project directory, you can run:
+![image](demo.gif)
 
-### `yarn start`
+This is a pathfinding visualizer that I made while learning common pathfinding algorithms like Dijkstra's, A*, and Greedy Best First Search. Below you can find some design decisions that went into making this project.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+# Algorithms and Cities
+- **Supported Algorithms**
+    - **Dijkstra**: Optimized breadth-first search that prioritizes exploring lower-cost paths.
+        - *(weighted, shortest path guaranteed)*
+    - **A\***: Optimized Dijkstra for when we know end node location. Uses lat/long distance as heuristic.
+        - *(weighted, shortest path guaranteed)*
+    - **Greedy Best-First Search**: Faster version of A* that doesn't guarantee shortest path 
+        - *(weighted, shortest path not guaranteed)*
+    - **Breadth First Search**: Explores all nodes equally in all directions, level-by-level
+        - unweighted, shortest path guaranteed
+    - **Depth First Search**: Explores as far as possible along each branch before backtracing
+        - unweighted, shortest path not guaranteed
+- **Supported Cities**
+    - San Francisco (37k nodes, 3.9MB)
+    - Vancouver (24k nodes, 2.5MB)
+    - New York (177k nodes, 17.7MB)
+    - Waterloo (22k nodes, 2.0MB)
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
 
-### `yarn test`
+# How I made this
+**Table of contents**
+* [Data preparation](https://github.com/0kzh/pathfinding-visualizer#data-preparation)
+* [Loading the graph](https://github.com/0kzh/pathfinding-visualizer#loading-the-graph)
+* [Rendering](https://github.com/0kzh/pathfinding-visualizer#rendering)
+* [Async everything](https://github.com/0kzh/pathfinding-visualizer#async-everything)
+* [Hit testing](https://github.com/0kzh/pathfinding-visualizer#hit-testing)
+* [Pathfinding](https://github.com/0kzh/pathfinding-visualizer#pathfinding)
+* [Developing locally](https://github.com/0kzh/pathfinding-visualizer#developing-locally)
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Data preparation
+Data generated and stored in this repository comes from www.openstreetmap.org
+(available under the [ODbL](https://opendatacommons.org/licenses/odbl/) license).
 
-### `yarn build`
+[BBBike](https://extract.bbbike.org/) was used to extract regional data as an array of nodes. This data was then run through a Python script to turn it into an undirected graph. During this step, BFS was performed to extract the largest possible connected graph from the dataset.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+In the output format, each road is an edge and each intersection is a node. An adjacency list keeps track of directly-connected nodes.
+```json
+{
+    "7402583179":{
+        "lat": 49.246429443359375,
+        "lon": -123.0760498046875,
+        "adj": [
+            "630211867",
+            "343340007"
+        ]
+    },
+}
+```
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Loading the graph
+Since the data for cities can be very large (for example, New York is nearly 18 MB), loading the data needed to be done on-demand. Progress callbacks were used to track the status of a download request
+```typescript
+const { data: jsonData } = await axios.get(
+      `https://pathfinding.kelvinzhang.ca/data/${file}`,
+      {
+        onDownloadProgress: (progressEvent) => {
+          const percentage = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          onProgress(percentage);
+          if (percentage >= 100) {
+            setTimeout(() => {
+              setLoading(false);
+              cityData[city].loaded = true;
+            }, 400);
+          }
+        },
+      }
+    );
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Rendering
+To draw the map, [React Leaflet](https://react-leaflet.js.org/) was used. I was initially going to use Google Maps, but support for React was limited and it wasn't that extensible. [CartoCDN](https://carto.com/help/building-maps/basemap-list/) tiles were used in the styling of the map.
 
-### `yarn eject`
+To visualize pathfinding progress, visited nodes needed to be drawn on the screen. However, at the same time, we cannot have a separate SVG element for each node when showing 150k+ elements - that would be impossibly slow. One workaround would be to render everything on a canvas, but there was no built-in library for that. Instead, I built my [own library](https://github.com/0kzh/pathfinding-visualizer/blob/master/src/lib/react-leaflet-canvas-markers/CanvasMarkersLayer.js) to render a canvas layer for markers.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Still, rendering every single node caused a lot of lag and the app would often freeze. For algorithms such as BFS, each layer/iteration introduces exponentially more nodes than the last. Because of this, only some nodes are flagged for rendering.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Async everything
+Running pathfinding on a large dataset of nodes takes a while, especially for unefficient algorithms like DFS and BFS. Because of this, rendering would often freeze and I needed to make everything asyncronous. Passing data within the application would cause a lot of unnecessary re-renders, so I offloaded tasks to WebWorkers.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Hit testing
+At this point, we discussed how data is loaded and how it's rendered. But how do we determine which node is being clicked? How can we click somewhere to set the start/end point and have it snap to the nearest node?
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+A naive solution would be to iterate through all the points and find the nearest point to our click. This would be a decent solution with a thousand points or less, but in our case, with several hundred thousands of points, it would be very slow.
 
-## Learn More
+A [QuadTree](https://en.wikipedia.org/wiki/Quadtree) was used to build an index of points. After a QuadTree is created, it can be queries in logarithmic time for the nearest neighbors around any coordinate. It's similar to a binary tree, but with four children instead.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Pathfinding
+Currently, these pathfinding algorithms are supported
+- **Dijkstra**: Optimized breadth-first search that prioritizes exploring lower-cost paths.
+    - *(weighted, shortest path guaranteed)*
+- **A\***: Optimized Dijkstra for when we know end node location. Uses lat/long distance as heuristic.
+    - *(weighted, shortest path guaranteed)*
+- **Greedy Best-First Search**: Faster version of A* that doesn't guarantee shortest path 
+    - *(weighted, shortest path not guaranteed)*
+- **Breadth First Search**: Explores all nodes equally in all directions, level-by-level
+    - unweighted, shortest path guaranteed
+- **Depth First Search**: Explores as far as possible along each branch before backtracing
+    - unweighted, shortest path not guaranteed
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Weighted vs Unweighted**  
+You'll notice that some of the algorithms listed above are weighted, while others are unweighted.
 
-### Code Splitting
+The weighted algorithms use the [Manhattan distance](https://en.wiktionary.org/wiki/Manhattan_distance) heuristic, which calculates the sum of horizontal and vertical (read: lateral and longitudinal) distances between two nodes. In other words, the shortest path will have the least *physical distance* between the two nodes.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+Unweighted algorithms give all edges the same weight of 1. In other words, the shortest path will have the least amount of nodes.
 
-### Analyzing the Bundle Size
+**Calculating performance**  
+Performance was calculated using a pausable [timer](https://www.npmjs.com/package/timer-machine). To simulate pathfinding speed, delays were added between iterations. This means that the timer only runs during calculations and is paused during rendering delays. For this reason, the total time to find the path is much smaller than what you see on the screen.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+## Developing locally
+If you'd like to play around with the code:
+```bash
+# install dependencies
+npm install
 
-### Making a Progressive Web App
+# serve with hot reload at localhost
+npm start
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+# building for production
+npm run build
+```
 
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+## Thank you
+Thanks for reading this! I hope you enjoyed it as much as I enjoyed working on this project.
